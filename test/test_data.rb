@@ -11,6 +11,24 @@ module Paid
       m
     end
 
+    def test_alias(params={})
+      id = params[:id] || 'al_test_alias'
+      {
+        :object => "alias",
+        :id => id,
+        :name => 'test-alias',
+        :customer => 'c_test_customer'
+      }.merge(params)
+    end
+
+    def test_alias_array(params={})
+      {
+        :data => [test_alias, test_alias, test_alias],
+        :object => 'list',
+        :url => '/v0/aliases'
+      }
+    end
+
     def test_customer(params={})
       id = params[:id] || 'c_test_customer'
       {

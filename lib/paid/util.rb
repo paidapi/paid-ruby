@@ -24,7 +24,8 @@ module Paid
         'transaction' => Transaction,
         'customer' => Customer,
         'event' => Event,
-        'invoice' => Invoice
+        'invoice' => Invoice,
+        'alias' => Alias
       }
     end
 

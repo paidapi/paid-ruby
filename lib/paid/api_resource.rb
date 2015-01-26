@@ -8,7 +8,8 @@ module Paid
       if self == APIResource
         raise NotImplementedError.new('APIResource is an abstract class.  You should perform actions on its subclasses (Transaction, Customer, etc.)')
       end
-      "/v0/#{CGI.escape(class_name.downcase)}s"
+      require 'active_support/inflector'
+      "/v0/#{CGI.escape(class_name.downcase).pluralize}"
     end
 
     def url

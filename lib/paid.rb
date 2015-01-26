@@ -27,6 +27,7 @@ require 'paid/certificate_blacklist'
 require 'paid/invoice'
 require 'paid/transaction'
 require 'paid/event'
+require 'paid/alias'
 
 # Errors
 require 'paid/errors/paid_error'
