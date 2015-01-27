@@ -14,13 +14,12 @@ module Paid
       assert_equal "inv_test_invoice", i.id
     end
 
-    # should "pay should pay an invoice" do
-    #   @mock.expects(:get).once.returns(test_response(test_invoice))
-    #   i = Paid::Invoice.retrieve('in_test_invoice')
-
-    #   @mock.expects(:post).once.with('https://api.paidapi.com/v0/invoices/in_test_invoice/pay', nil, '').returns(test_response(test_paid_invoice))
-    #   i.pay
-    #   assert_equal nil, i.next_payment_attempt
-    # end
+    should "charges should be issuable" do
+      @mock.expects(:get).never
+      @mock.expects(:post).once.returns(test_response({:id => "ch_test_charge", :issued_at => 123467890}))
+      i = Paid::Invoice.new("test_charge")
+      i.issue
+      assert !i.issued_at.nil?
+    end
   end
 end
