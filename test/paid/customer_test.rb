@@ -31,5 +31,14 @@ module Paid
       c = Paid::Customer.create
       assert_equal "c_test_customer", c.id
     end
+
+    should "be able to generate invoice" do
+      @mock.expects(:get).never
+      @mock.expects(:post).once.returns(test_response(test_customer))
+      c = Paid::Customer.create
+      @mock.expects(:post).once.returns(test_response(test_invoice))
+      i = c.generate_invoice
+      assert i.kind_of?(Paid::Invoice)
+    end
   end
 end
