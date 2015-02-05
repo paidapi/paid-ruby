@@ -4,7 +4,7 @@ module Paid
       self.name.split('::')[-1]
     end
 
-    def self.url
+    def self.api_url
       if self == APIResource
         raise NotImplementedError.new('APIResource is an abstract class.  You should perform actions on its subclasses (Transaction, Customer, etc.)')
       end
@@ -12,15 +12,15 @@ module Paid
       "/v0/#{CGI.escape(class_name.downcase).pluralize}"
     end
 
-    def url
+    def api_url
       unless id = self['id']
         raise InvalidRequestError.new("Could not determine which URL to request: #{self.class} instance has invalid ID: #{id.inspect}", 'id')
       end
-      "#{self.class.url}/#{CGI.escape(id)}"
+      "#{self.class.api_url}/#{CGI.escape(id)}"
     end
 
     def refresh
-      response, api_key = Paid.request(:get, url, @api_key, @retrieve_options)
+      response, api_key = Paid.request(:get, api_url, @api_key, @retrieve_options)
       refresh_from(response, api_key)
     end
 

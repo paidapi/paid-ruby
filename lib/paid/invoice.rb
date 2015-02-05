@@ -11,10 +11,21 @@ module Paid
       refresh_from(response, api_key)
     end
 
+    def mark_as_paid(params={}, opts={})
+      api_key, headers = Util.parse_opts(opts)
+      response, api_key = Paid.request(
+        :post, mark_as_paid_url, api_key || @api_key, params, headers)
+      refresh_from(response, api_key)
+    end
+
     private
 
     def issue_url
-      url + '/issue'
+      api_url + '/issue'
+    end
+
+    def mark_as_paid_url
+      api_url + '/mark_as_paid'
     end
   end
 end

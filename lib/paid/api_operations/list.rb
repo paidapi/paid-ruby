@@ -4,7 +4,7 @@ module Paid
       module ClassMethods
         def all(filters={}, opts={})
           api_key, headers = Util.parse_opts(opts)
-          response, api_key = Paid.request(:get, url, api_key, filters, headers)
+          response, api_key = Paid.request(:get, api_url, api_key, filters, headers)
           Util.convert_to_paid_object(response, api_key)
         end
       end

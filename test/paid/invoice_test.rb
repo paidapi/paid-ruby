@@ -16,10 +16,18 @@ module Paid
 
     should "charges should be issuable" do
       @mock.expects(:get).never
-      @mock.expects(:post).once.returns(test_response({:id => "ch_test_charge", :issued_at => 123467890}))
-      i = Paid::Invoice.new("test_charge")
+      @mock.expects(:post).once.returns(test_response({:id => "inv_test_invoice", :issued_at => 123467890}))
+      i = Paid::Invoice.new("test_invoice")
       i.issue
       assert !i.issued_at.nil?
+    end
+
+    should "charges should be able to be marked as paid" do
+      @mock.expects(:get).never
+      @mock.expects(:post).once.returns(test_response({:id => "inv_test_invoice", :paid => true}))
+      i = Paid::Invoice.new("test_invoice")
+      i.mark_as_paid
+      assert i.paid
     end
   end
 end

@@ -25,7 +25,7 @@ module Paid
     private
 
     def generate_invoice_url
-      url + '/generate_invoice'
+      api_url + '/generate_invoice'
     end
   end
 end
