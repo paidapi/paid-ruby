@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = Paid::VERSION
   s.authors     = ['Ryan Jackson']
   s.email       = ['ryan@paidapi.com']
-  s.homepage    = 'https://docs.paidapi.com'
+  s.homepage    = 'http://docs.paidapi.com'
   s.summary     = 'Ruby bindings for Paid API'
   s.description = 'Paid is the programmatic way to manage payments.  See https://paidapi.com for details.'
   s.license     = 'MIT'
