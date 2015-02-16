@@ -11,7 +11,8 @@ module Paid
         if values.length > 0
           values.delete(:id)
 
-          response, api_key = Paid.request(:post, api_url, @api_key, values)
+          pdb values
+          response, api_key = Paid.request(:put, api_url, @api_key, values)
           refresh_from(response, api_key)
         end
         self
