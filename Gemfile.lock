@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    paid (0.0.5)
+    paid (0.0.6)
       json (~> 1.8.1)
       mime-types (>= 1.25, < 3.0)
       rest-client (~> 1.4)
