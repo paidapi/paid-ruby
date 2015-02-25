@@ -16,7 +16,7 @@ module Paid
       unless id = self['id']
         raise InvalidRequestError.new("Could not determine which URL to request: #{self.class} instance has invalid ID: #{id.inspect}", 'id')
       end
-      "#{self.class.api_url}/#{CGI.escape(id)}"
+      "#{self.class.api_url}/#{CGI.escape(id.to_s)}"
     end
 
     def refresh
