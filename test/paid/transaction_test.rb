@@ -45,5 +45,13 @@ module Paid
 
       assert !c.paid
     end
+
+    should "transactions should be able to be marked as paid" do
+      @mock.expects(:get).never
+      @mock.expects(:post).once.returns(test_response({:id => "tr_test_transaction", :paid => true}))
+      t = Paid::Invoice.new("test_transaction")
+      t.mark_as_paid
+      assert t.paid
+    end
   end
 end
