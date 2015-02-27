@@ -45,7 +45,7 @@ module Paid
     def refresh_from(values, api_key, partial=false)
       @api_key = api_key
 
-      @previous_metadata = values[:metadata]
+      @previous_properties = values[:properties]
       removed = partial ? Set.new : Set.new(@values.keys - values.keys)
       added = Set.new(values.keys - @values.keys)
 

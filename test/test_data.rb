@@ -17,7 +17,7 @@ module Paid
         :object => "alias",
         :id => id,
         :name => 'test-alias',
-        :customer => 'c_test_customer'
+        :customer => 'cus_test_customer'
       }.merge(params)
     end
 
@@ -30,7 +30,7 @@ module Paid
     end
 
     def test_customer(params={})
-      id = params[:id] || 'c_test_customer'
+      id = params[:id] || 'cus_test_customer'
       {
         :transactions => [],
         :object => "customer",
@@ -56,7 +56,7 @@ module Paid
         :object => "transaction",
         :description => 'a description',
         :created => 1304114826,
-        :customer => 'c_test_customer'
+        :customer => 'cus_test_customer'
       }.merge(params)
     end
 
@@ -89,7 +89,7 @@ module Paid
         next_chase_on: nil,
         terms: 30,
         due_date: nil,
-        customer: "c_test_customer",
+        customer: "cus_test_customer",
         issued_at: nil
       }
     end
@@ -118,6 +118,47 @@ module Paid
         :error => {
           :type => "api_error"
         }
+      }
+    end
+
+    def test_plan(params={})
+      {
+        :amount => 100,
+        :id => 'pl_test_plan',
+        :object => 'plan',
+        :name => 'test-name',
+        :description => 'a description',
+        :interval => 'month',
+        :interval_count => 3
+      }.merge(params)
+    end
+
+    def test_plans_array(params={})
+      {
+        :data => [test_plan, test_plan, test_plan],
+        :object => 'list',
+        :url => '/v0/plans'
+      }
+    end
+
+    def test_subscription(params={})
+      {
+        :amount => 100,
+        :id => 'sub_test_subscription',
+        :customer => 'cus_test_customer',
+        :cancelled_at => nil,
+        :ended_at => nil,
+        :started_at => 123_456_789,
+        :start_on => nil,
+        :plan => 'pl_test_plan'
+      }.merge(params)
+    end
+
+    def test_subscriptions_array(params={})
+      {
+        :data => [test_subscription, test_subscription, test_subscription],
+        :object => 'list',
+        :url => '/v0/subscriptions'
       }
     end
   end

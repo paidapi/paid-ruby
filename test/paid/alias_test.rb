@@ -1,29 +1,22 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 module Paid
+  # AliasTest
   class AliasTest < Test::Unit::TestCase
-    should "aliases should not be deletable" do
+    should 'aliases should not be deletable' do
       assert_raises NoMethodError do
-        @mock.expects(:get).once.returns(test_response(test_customer))
-        c = Paid::Alias.retrieve("test_alias")
+        # Expect twice because Paid::Alias.retrieve returns a customer object
+        @mock.expects(:get).twice.returns(test_response(test_customer))
+        c = Paid::Alias.retrieve('test_alias')
         c.delete
       end
     end
 
-    should "execute should return a new, fully executed alias when passed correct parameters" do
-      @mock.expects(:post).with do |url, api_key, params|
-        url == "#{Paid.api_base}/v0/aliases" && api_key.nil? && CGI.parse(params) == {
-            'name' => ['test-alias'],
-            'customer' => ['c_test_customer']
-        }
-      end.once.returns(test_response(test_alias))
-
-      a = Paid::Alias.create({
-        :name => 'test-alias',
-        :customer => 'c_test_customer'
-      })
-
-      assert a.name == 'test-alias'
+    should 'retrieve should retrieve alias' do
+      # Expect twice because Paid::Alias.retrieve returns a customer object
+      @mock.expects(:get).twice.returns(test_response(test_alias))
+      i = Paid::Alias.retrieve('in_test_alias')
+      assert_equal 'al_test_alias', i.id
     end
   end
 end

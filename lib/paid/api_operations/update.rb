@@ -4,33 +4,33 @@ module Paid
       def save(opts={})
         values = serialize_params(self).merge(opts)
 
-        if @values[:metadata]
-          values[:metadata] = serialize_metadata
+        if @values[:properties]
+          values[:properties] = serialize_properties
         end
 
         if values.length > 0
           values.delete(:id)
 
-          response, api_key = Paid.request(:put, api_url, @api_key, values)
+          response, api_key = Paid.request(:post, api_url, @api_key, values)
           refresh_from(response, api_key)
         end
         self
       end
 
-      def serialize_metadata
-        if @unsaved_values.include?(:metadata)
-          # the metadata object has been reassigned
-          # i.e. as object.metadata = {key => val}
-          metadata_update = @values[:metadata]  # new hash
-          new_keys = metadata_update.keys.map(&:to_sym)
+      def serialize_properties
+        if @unsaved_values.include?(:properties)
+          # the properties object has been reassigned
+          # i.e. as object.properties = {key => val}
+          properties_update = @values[:properties]  # new hash
+          new_keys = properties_update.keys.map(&:to_sym)
           # remove keys at the server, but not known locally
-          keys_to_unset = @previous_metadata.keys - new_keys
-          keys_to_unset.each {|key| metadata_update[key] = ''}
+          keys_to_unset = @previous_properties.keys - new_keys
+          keys_to_unset.each {|key| properties_update[key] = ''}
 
-          metadata_update
+          properties_update
         else
-          # metadata is a PaidObject, and can be serialized normally
-          serialize_params(@values[:metadata])
+          # properties is a PaidObject, and can be serialized normally
+          serialize_params(@values[:properties])
         end
       end
 

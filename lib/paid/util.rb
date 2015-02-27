@@ -25,7 +25,9 @@ module Paid
         'customer' => Customer,
         'event' => Event,
         'invoice' => Invoice,
-        'alias' => Alias
+        'alias' => Alias,
+        'plan' => Plan,
+        'subscription' => Subscription
       }
     end
 

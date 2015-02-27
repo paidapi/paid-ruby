@@ -28,6 +28,8 @@ require 'paid/invoice'
 require 'paid/transaction'
 require 'paid/event'
 require 'paid/alias'
+require 'paid/plan'
+require 'paid/subscription'
 
 # Errors
 require 'paid/errors/paid_error'

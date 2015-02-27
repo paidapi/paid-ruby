@@ -29,7 +29,7 @@ module Paid
     should "create should return a new customer" do
       @mock.expects(:post).once.returns(test_response(test_customer))
       c = Paid::Customer.create
-      assert_equal "c_test_customer", c.id
+      assert_equal "cus_test_customer", c.id
     end
 
     should "be able to generate invoice" do
