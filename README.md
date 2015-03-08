@@ -1,4 +1,4 @@
-# Paid Ruby bindings ![Travis CI Status](https://travis-ci.org/stripe/stripe-ruby.svg?branch=master)
+# Paid Ruby bindings ![Travis CI Status](https://travis-ci.org/paidapi/paid-ruby.svg?branch=master)
 
 
 ## Installation
