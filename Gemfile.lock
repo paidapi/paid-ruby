@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    paid (0.1.0)
+    paid (1.0.0)
       json (~> 1.8.1)
       mime-types (>= 1.25, < 3.0)
       rest-client (~> 1.4)
@@ -27,7 +27,7 @@ GEM
     netrc (0.10.2)
     power_assert (0.2.2)
     rake (10.4.2)
-    rest-client (1.7.2)
+    rest-client (1.7.3)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
     shoulda (3.4.0)

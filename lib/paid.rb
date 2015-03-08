@@ -1,35 +1,30 @@
 # Paid Ruby bindings
-# API spec at https://docs.paidapi.com
+# API spec at https://paid.com/docs/api
 require 'cgi'
 require 'set'
 require 'openssl'
 require 'rest_client'
 require 'json'
+require 'base64'
 
 # Version
 require 'paid/version'
 
-# API operations
-require 'paid/api_operations/create'
-require 'paid/api_operations/update'
-require 'paid/api_operations/delete'
-require 'paid/api_operations/list'
-
 # Resources
-require 'paid/util'
-require 'paid/paid_object'
+require 'paid/api_class'
 require 'paid/api_resource'
-require 'paid/singleton_api_resource'
-require 'paid/list_object'
-require 'paid/account'
-require 'paid/customer'
-require 'paid/certificate_blacklist'
-require 'paid/invoice'
+require 'paid/api_singleton'
+require 'paid/api_list'
+require 'paid/util'
+
+# Requires for classes
 require 'paid/transaction'
+require 'paid/invoice'
 require 'paid/event'
-require 'paid/alias'
+require 'paid/customer'
 require 'paid/plan'
 require 'paid/subscription'
+require 'paid/account'
 
 # Errors
 require 'paid/errors/paid_error'
@@ -39,114 +34,88 @@ require 'paid/errors/invalid_request_error'
 require 'paid/errors/authentication_error'
 
 module Paid
-  DEFAULT_CA_BUNDLE_PATH = File.dirname(__FILE__) + '/data/ca-certificates.crt'
-  @api_base = 'https://api.paidapi.com'
-
-  @ssl_bundle_path  = DEFAULT_CA_BUNDLE_PATH
-  @verify_ssl_certs = false
-  @CERTIFICATE_VERIFIED = false
-
+  @api_base = "https://api.paidapi.com"
+  @api_key = nil
 
   class << self
-    attr_accessor :api_key, :api_base, :verify_ssl_certs, :api_version
+    attr_accessor :api_key, :api_base, :api_test
   end
 
-  def self.api_url(url='', api_base_url=nil)
-    (api_base_url || @api_base) + url
+  def self.api_url(path='')
+    "#{@api_base}#{path}"
   end
 
-  def self.request(method, url, api_key, params={}, headers={}, api_base_url=nil)
-    api_base_url = api_base_url || @api_base
+  def self.request(method, path, params={}, headers={})
+    verify_api_key(api_key)
 
-
-    unless api_key ||= @api_key
-      raise AuthenticationError.new('No API key provided. ' +
-        'Set your API key using "Paid.api_key = <API-KEY>". ' +
-        'You can generate API keys from the Paid web interface. ' +
-        'See https://paidapi.com/api for details, or email hello@paidapi.com ' +
-        'if you have any questions.')
-    end
-
-    if api_key =~ /\s/
-      raise AuthenticationError.new('Your API key is invalid, as it contains ' +
-        'whitespace. (HINT: You can double-check your API key from the ' +
-        'Paid web interface. See https://paidapi.com/api for details, or ' +
-        'email hello@paidapi.com if you have any questions.)')
-    end
-
+    url = api_url(path)
 
     request_opts = { :verify_ssl => false }
 
-    if ssl_preflight_passed?
-      request_opts.update(:verify_ssl => OpenSSL::SSL::VERIFY_PEER,
-                          :ssl_ca_file => @ssl_bundle_path)
-    end
-
-    if @verify_ssl_certs and !@CERTIFICATE_VERIFIED
-      @CERTIFICATE_VERIFIED = CertificateBlacklist.check_ssl_cert(api_base_url, @ssl_bundle_path)
-    end
-
-    params = Util.objects_to_ids(params)
-    url = api_url(url, api_base_url)
-
-    case method.to_s.downcase.to_sym
-    when :get, :head, :delete
-      # Make params into GET parameters
-      url += "#{URI.parse(url).query ? '&' : '?'}#{uri_encode(params)}" if params && params.any?
-      payload = nil
-    else
-      if headers[:content_type] && headers[:content_type] == "multipart/form-data"
-        payload = params
-      else
-        payload = uri_encode(params)
+    if [:get, :head, :delete].include?(method.to_s.downcase.to_sym)
+      unless params.empty?
+        url += URI.parse(url).query ? '&' : '?' + Util.query_string(params)
       end
+      params = nil
     end
 
-    request_opts.update(:headers => request_headers(api_key).update(headers),
-                        :method => method, :open_timeout => 30,
-                        :payload => payload, :url => url, :timeout => 80)
+    headers = default_headers.update(basic_auth_headers(api_key)).update(headers)
+    request_opts.update(:headers => headers,
+                        :method => method,
+                        :open_timeout => 30,
+                        :payload => params,
+                        :url => url,
+                        :timeout => 60)
+
     begin
       response = execute_request(request_opts)
-    rescue SocketError => e
-      handle_restclient_error(e, api_base_url)
-    rescue NoMethodError => e
-      # Work around RestClient bug
-      if e.message =~ /\WRequestFailed\W/
-        e = APIConnectionError.new('Unexpected HTTP response code')
-        handle_restclient_error(e, api_base_url)
-      else
-        raise
-      end
-    rescue RestClient::ExceptionWithResponse => e
-      if rcode = e.http_code and rbody = e.http_body
-        handle_api_error(rcode, rbody)
-      else
-        handle_restclient_error(e, api_base_url)
-      end
-    rescue RestClient::Exception, Errno::ECONNREFUSED => e
-      handle_restclient_error(e, api_base_url)
     rescue Exception => e
+      handle_request_error(e, url)
     end
 
-
-    [parse(response), api_key]
+    parse(response)
   end
 
-  private
+  # Mostly here for stubbing out during tests.
+  def self.execute_request(opts)
+    RestClient::Request.execute(request_opts)
+  end
 
-  def self.ssl_preflight_passed?
-    if !verify_ssl_certs && !@no_verify
-        "Execute 'Paid.verify_ssl_certs = true' to enable verification."
-
-      @no_verify = true
-
-    elsif !Util.file_readable(@ssl_bundle_path) && !@no_bundle
-        "because #{@ssl_bundle_path} isn't readable"
-
-      @no_bundle = true
+  def self.parse(response)
+    begin
+      json = JSON.parse(response.body)
+    rescue JSON::ParserError
+      raise APIError.generic(response.code, response.body)
     end
 
-    !(@no_verify || @no_bundle)
+    Util.symbolize_keys(json)
+  end
+
+  def self.default_headers
+    headers = {
+      :user_agent => "Paid/::API_VERSION:: RubyBindings/#{Paid::VERSION}",
+      :content_type => 'application/x-www-form-urlencoded'
+    }
+
+    begin
+      headers.update(:x_paid_client_user_agent => JSON.generate(user_agent))
+    rescue => e
+      headers.update(:x_paid_client_raw_user_agent => user_agent.inspect,
+                     :error => "#{e} (#{e.class})")
+    end
+    headers
+  end
+
+  def self.basic_auth_headers(api_key=@api_key)
+    api_key ||= @api_key
+    unless api_key
+      raise ArgumentError.new('No API key provided. Set your API key using "Paid.api_key = <API-KEY>".')
+    end
+
+    base_64_key = Base64.encode64("#{api_key}:")
+    {
+      "Authorization" => "Basic #{base_64_key}",
+    }
   end
 
   def self.user_agent
@@ -161,7 +130,6 @@ module Paid
       :publisher => 'paid',
       :uname => @uname
     }
-
   end
 
   def self.get_uname
@@ -170,95 +138,49 @@ module Paid
     "uname lookup failed"
   end
 
-  def self.uri_encode(params)
-    Util.flatten_params(params).
-      map { |k,v| "#{k}=#{Util.url_encode(v)}" }.join('&')
-  end
+  def self.verify_api_key(api_key)
+    unless api_key
+      raise AuthenticationError.new('No API key provided. ' +
+        'Set your API key using "Paid.api_key = <API-KEY>". ' +
+        'You can generate API keys from the Paid web interface. ' +
+        'See http://docs.paidapi.com/#authentication for details, or email hello@paidapi.com ' +
+        'if you have any questions.')
+    end
 
-  def self.request_headers(api_key)
-    headers = {
-      :user_agent => "Paid/v0 RubyBindings/#{Paid::VERSION}",
-      :authorization => "Bearer #{api_key}",
-      :content_type => 'application/x-www-form-urlencoded'
-    }
-
-    headers[:paid_version] = api_version if api_version
-
-    begin
-      headers.update(:x_paid_client_user_agent => JSON.generate(user_agent))
-    rescue => e
-      headers.update(:x_paid_client_raw_user_agent => user_agent.inspect,
-                     :error => "#{e} (#{e.class})")
+    if api_key =~ /\s/
+      raise AuthenticationError.new('Your API key is invalid, as it contains ' +
+        'whitespace. (HINT: You can double-check your API key from the ' +
+        'Paid web interface. See http://docs.paidapi.com/#authentication for details, or ' +
+        'email hello@paidapi.com if you have any questions.)')
     end
   end
 
-  def self.execute_request(opts)
-    RestClient::Request.execute(opts)
-  end
-
-  def self.parse(response)
-    begin
-      # Would use :symbolize_names => true, but apparently there is
-      # some library out there that makes symbolize_names not work.
-      response = JSON.parse(response.body)
-    rescue JSON::ParserError
-      raise general_api_error(response.code, response.body)
+  def self.handle_request_error(error, url)
+    # First we see if this is an error with a response, and if it is
+    # we check to see if there is an http code and body to work with.
+    if error.is_a?(RestClient::ExceptionWithResponse)
+      if error.http_code && error.http_body
+        handle_api_error(error.http_code, error.http_body)
+      end
     end
 
-    Util.symbolize_names(response)
+    # If we got here then the error hasn't been handled yet.
+    # Handle it as a connection error.
+    handle_connection_error(error, url)
+
+    # Finally if we get here we don't know what type of error it is, so just raise it.
+    raise error
   end
 
-  def self.general_api_error(rcode, rbody)
-    APIError.new("Invalid response object from API: #{rbody.inspect} " +
-                 "(HTTP response code was #{rcode})", rcode, rbody)
-  end
+  def self.handle_connection_error(error, url)
+    message = "An error occurred while connecting to Paid at #{url}."
 
-  def self.handle_api_error(rcode, rbody)
-    begin
-      error_obj = JSON.parse(rbody)
-      error_obj = Util.symbolize_names(error_obj)
-      error = error_obj[:error] or raise PaidError.new # escape from parsing
-
-    rescue JSON::ParserError, PaidError
-      raise general_api_error(rcode, rbody)
-    end
-
-    case rcode
-    when 400, 404
-      raise invalid_request_error error, rcode, rbody, error_obj
-    when 401
-      raise authentication_error error, rcode, rbody, error_obj
-    else
-      raise api_error error, rcode, rbody, error_obj
-    end
-
-  end
-
-  def self.invalid_request_error(error, rcode, rbody, error_obj)
-    InvalidRequestError.new(error[:message], error[:param], rcode,
-                            rbody, error_obj)
-  end
-
-  def self.authentication_error(error, rcode, rbody, error_obj)
-    AuthenticationError.new(error[:message], rcode, rbody, error_obj)
-  end
-
-  def self.api_error(error, rcode, rbody, error_obj)
-    APIError.new(error[:message], rcode, rbody, error_obj)
-  end
-
-  def self.handle_restclient_error(e, api_base_url=nil)
-    api_base_url = @api_base unless api_base_url
-    connection_message = "Please check your internet connection and try again. " \
-        "If this problem persists, you should check Paid's service status at " \
-        "https://twitter.com/paidstatus, or let us know at hello@paidapi.com."
-
-    case e
+    case error
     when RestClient::RequestTimeout
-      message = "Could not connect to Paid (#{api_base_url}). #{connection_message}"
+      message +=  connection_message
 
     when RestClient::ServerBrokeConnection
-      message = "The connection to the server (#{api_base_url}) broke before the " \
+      message = "The connection to the server at (#{url}) broke before the " \
         "request completed. #{connection_message}"
 
     when RestClient::SSLCertificateNotVerified
@@ -268,16 +190,41 @@ module Paid
         "If this problem persists, let us know at hello@paidapi.com."
 
     when SocketError
-      message = "Unexpected error communicating when trying to connect to Paid. " \
+      message = "Unexpected error when trying to connect to Paid. " \
         "You may be seeing this message because your DNS is not working. " \
-        "To check, try running 'host paidapi.com' from the command line."
+        "To check, try running 'host api.paidapi.com' from the command line."
 
     else
       message = "Unexpected error communicating with Paid. " \
-        "If this problem persists, let us know at hello@paidapi.com."
-
+        "If this problem persists, let us know at hello@paidapi.com. #{connection_message}"
     end
 
-    raise APIConnectionError.new(message + "\n\n(Network error: #{e.message})")
+    raise APIConnectionError.new(message + "\n\n(Network error: #{error.message}")
   end
+
+  def self.connection_message
+    "Please check your internet connection and try again. " \
+    "If this problem persists, you should check Paid's service status at " \
+    "https://twitter.com/paidstatus, or let us know at hello@paidapi.com."
+  end
+
+  def self.handle_api_error(rcode, rbody)
+    begin
+      error_obj = JSON.parse(rbody)
+    rescue JSON::ParserError
+      raise APIError.generic(rcode, rbody)
+    end
+    error_obj = Util.symbolize_keys(error_obj)
+    raise APIError.generic(rcode, rbody) unless error = error_obj[:error]
+
+    case rcode
+    when 400, 404
+      raise InvalidRequestError.new(error[:message], error[:param], rcode, rbody, error_obj)
+    when 401
+      raise AuthenticationError.new(error[:message], rcode, rbody, error_obj)
+    else
+      raise APIError.new(error[:message], rcode, rbody, error_obj)
+    end
+  end
+
 end

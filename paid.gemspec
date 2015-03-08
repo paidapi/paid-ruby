@@ -1,18 +1,16 @@
 $:.unshift(File.join(File.dirname(__FILE__), 'lib'))
 
-# Maintain your gem's version:
-require "paid/version"
+require 'paid/version'
 
-# Describe your gem and declare its dependencies:
-Gem::Specification.new do |s|
-  s.name        = 'paid'
-  s.version     = Paid::VERSION
-  s.authors     = ['Ryan Jackson']
-  s.email       = ['ryan@paidapi.com']
-  s.homepage    = 'http://docs.paidapi.com'
-  s.summary     = 'Ruby bindings for Paid API'
+spec = Gem::Specification.new do |s|
+  s.name = 'paid'
+  s.summary = 'Ruby bindings for Paid API'
   s.description = 'Paid is the programmatic way to manage payments.  See https://paidapi.com for details.'
-  s.license     = 'MIT'
+  s.homepage = 'http://docs.paidapi.com'
+  s.authors = ['Jon Calhoun', 'Ryan Jackson']
+  s.email = ['joncalhoun@gmail.com', 'ryan@paidapi.com']
+  s.version = Paid::VERSION
+  s.license = 'MIT'
 
   s.add_dependency('rest-client', '~> 1.4')
   s.add_dependency('mime-types', '>= 1.25', '< 3.0')
@@ -28,3 +26,4 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ['lib']
 end
+

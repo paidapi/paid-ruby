@@ -4,6 +4,7 @@ require 'mocha/setup'
 require 'stringio'
 require 'shoulda'
 require File.expand_path('../test_data', __FILE__)
+require File.expand_path('../mock_resource', __FILE__)
 
 # monkeypatch request methods
 module Paid
@@ -14,12 +15,13 @@ module Paid
   end
 
   def self.execute_request(opts)
-    get_params = (opts[:headers] || {})[:params]
+    headers = opts[:headers]
     post_params = opts[:payload]
     case opts[:method]
-    when :get then @mock_rest_client.get opts[:url], get_params, post_params
-    when :post then @mock_rest_client.post opts[:url], get_params, post_params
-    when :delete then @mock_rest_client.delete opts[:url], get_params, post_params
+    when :get then @mock_rest_client.get opts[:url], headers, post_params
+    when :put then @mock_rest_client.put opts[:url], headers, post_params
+    when :post then @mock_rest_client.post opts[:url], headers, post_params
+    when :delete then @mock_rest_client.delete opts[:url], headers, post_params
     end
   end
 end
