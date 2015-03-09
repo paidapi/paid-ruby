@@ -78,7 +78,7 @@ module Paid
 
   # Mostly here for stubbing out during tests.
   def self.execute_request(opts)
-    RestClient::Request.execute(request_opts)
+    RestClient::Request.execute(opts)
   end
 
   def self.parse(response)
@@ -88,7 +88,12 @@ module Paid
       raise APIError.generic(response.code, response.body)
     end
 
-    Util.symbolize_keys(json)
+    # TODO(jonclahoun): Remove this when Paid's API returns the correct status code.
+    json = Util.symbolize_keys(json)
+    if json.has_key?(:error)
+      raise PaidError.new(json[:error][:message], response.code, response.body, json)
+    end
+    json
   end
 
   def self.default_headers

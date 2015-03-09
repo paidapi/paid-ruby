@@ -2,6 +2,7 @@ module Paid
   class Event < APIResource
     class Data
       def self.construct(json={})
+        return nil if json.nil?
         klass = APIClass.subclass_fetch(json[:object])
         klass.construct(json)
       end

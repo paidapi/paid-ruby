@@ -47,3 +47,12 @@ gem 'paid'
 ## Development
 
 Test cases can be run with: `bundle exec rake test`
+
+
+## Test Rake Task
+
+To hit the API with some test calls run:
+
+```bash
+bundle exec rake test_api["sk_test_api_key"]
+```
