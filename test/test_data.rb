@@ -66,10 +66,6 @@ module Paid
         :billing_cycle => "manual",
         :stripe_customer_id => nil,
         :external_id => "customer_external_id",
-        :aliases => {
-          :object => "list",
-          :data => ["12345"]
-        }
       }
     end
 

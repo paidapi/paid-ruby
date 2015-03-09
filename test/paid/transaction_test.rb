@@ -96,10 +96,6 @@ module Paid
         assert_equal(test_transaction[:customer], @transaction.customer)
       end
 
-      should 'have the alias attribute' do
-        assert_equal(test_transaction[:alias], @transaction.alias)
-      end
-
       should 'have the paid attribute' do
         assert_equal(test_transaction[:paid], @transaction.paid)
       end

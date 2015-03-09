@@ -1,14 +1,13 @@
 module Paid
   class Transaction < APIResource
     # attributes :id and :object inherited from APIResource
-    attribute :amount # req for create
-    attribute :description # req for create
-    attribute :customer # optional for create
-    attribute :alias # optional for create
-    attribute :paid # invalid for create
-    attribute :paid_on # optional for create
-    attribute :properties # optional for create
-    attribute :invoice # invalid for create
+    attribute :amount
+    attribute :description
+    attribute :customer
+    attribute :paid
+    attribute :paid_on
+    attribute :properties
+    attribute :invoice
 
     api_class_method :create, :post
     api_class_method :retrieve, :get, ":path/:id", :arguments => [:id]

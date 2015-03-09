@@ -14,13 +14,6 @@ module Paid
         assert(customer.is_a?(Paid::Customer))
       end
 
-      should 'be retrieveable by alias' do
-        al = "alias_for_cust"
-        @mock.expects(:get).once.with("#{Paid.api_base}/v0/aliases/#{al}", anything, anything).returns(test_response(test_customer))
-        customer = Paid::Customer.by_alias(al)
-        assert(customer.is_a?(Paid::Customer))
-      end
-
       should 'be retrieveable by external_id' do
         external_id = "external_id_for_cust"
         @mock.expects(:get).once.with("#{@customer_url}/by_external_id/#{external_id}", anything, anything).returns(test_response(test_customer))
@@ -186,11 +179,6 @@ module Paid
 
       should 'have the external_id attribute' do
         assert_equal(test_customer[:external_id], @customer.external_id)
-      end
-
-      should 'have & convert the aliases attribute' do
-        assert(@customer.aliases.is_a?(Paid::APIList))
-        assert_equal(test_customer[:aliases][:data], @customer.aliases.data)
       end
 
     end
