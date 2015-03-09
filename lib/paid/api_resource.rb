@@ -1,33 +1,16 @@
 module Paid
-  class APIResource < PaidObject
-    def self.class_name
-      self.name.split('::')[-1]
-    end
+  class APIResource < APIClass
+    attribute :id
+    attribute :object
 
-    def self.api_url
-      if self == APIResource
-        raise NotImplementedError.new('APIResource is an abstract class.  You should perform actions on its subclasses (Transaction, Customer, etc.)')
+    api_instance_method :refresh, :get, :constructor => :self
+
+    def path(base=self.class.path)
+      unless id
+        raise InvalidRequestError.new("Could not determine which URL to request: #{self.class} instance has an invalid ID: #{id.inspect}", 'id')
       end
-      require 'active_support/inflector'
-      "/v0/#{CGI.escape(class_name.downcase).pluralize}"
+      "#{base}/#{id}"
     end
 
-    def api_url
-      unless id = self['id']
-        raise InvalidRequestError.new("Could not determine which URL to request: #{self.class} instance has invalid ID: #{id.inspect}", 'id')
-      end
-      "#{self.class.api_url}/#{CGI.escape(id.to_s)}"
-    end
-
-    def refresh
-      response, api_key = Paid.request(:get, api_url, @api_key, @retrieve_options)
-      refresh_from(response, api_key)
-    end
-
-    def self.retrieve(id, api_key=nil)
-      instance = self.new(id, api_key)
-      instance.refresh
-      instance
-    end
   end
 end

@@ -1,130 +1,77 @@
 module Paid
   module Util
-    def self.objects_to_ids(h)
-      case h
-      when APIResource
-        h.id
-      when Hash
-        res = {}
-        h.each { |k, v| res[k] = objects_to_ids(v) unless v.nil? }
-        res
-      when Array
-        h.map { |v| objects_to_ids(v) }
+
+    def self.query_string(params)
+      if params && params.any?
+        return query_array(params).join('&')
       else
-        h
+        return ""
       end
     end
 
-    def self.object_classes
-      @object_classes ||= {
-        # data structures
-        'list' => ListObject,
-
-        # business objects
-        'transaction' => Transaction,
-        'customer' => Customer,
-        'event' => Event,
-        'invoice' => Invoice,
-        'alias' => Alias,
-        'plan' => Plan,
-        'subscription' => Subscription
-      }
-    end
-
-    def self.convert_to_paid_object(resp, api_key)
-      case resp
-      when Array
-        resp.map { |i| convert_to_paid_object(i, api_key) }
-      when Hash
-        # Try converting to a known object class.  If none available, fall back to generic PaidObject
-        object_classes.fetch(resp[:object], PaidObject).construct_from(resp, api_key)
-      else
-        resp
-      end
-    end
-
-    def self.file_readable(file)
-      # This is nominally equivalent to File.readable?, but that can
-      # report incorrect results on some more oddball filesystems
-      # (such as AFS)
-      begin
-        File.open(file) { |f| }
-      rescue
-        false
-      else
-        true
-      end
-    end
-
-    def self.symbolize_names(object)
-      case object
-      when Hash
-        new_hash = {}
-        object.each do |key, value|
-          key = (key.to_sym rescue key) || key
-          new_hash[key] = symbolize_names(value)
-        end
-        new_hash
-      when Array
-        object.map { |value| symbolize_names(value) }
-      else
-        object
-      end
-    end
-
-    def self.url_encode(key)
-      URI.escape(key.to_s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
-    end
-
-    def self.flatten_params(params, parent_key=nil)
-      result = []
+    # Three major use cases (and nesting of them needs to be supported):
+    #   { a: { b: "bvalue" } }  => ["a[b]=bvalue"]
+    #   { a: [1, 2] }           => ["a[]=1", "a[]=2"]
+    #   { a: "value" }          => ["a=value"]
+    def self.query_array(params, key_prefix=nil)
+      ret = []
       params.each do |key, value|
-        calculated_key = parent_key ? "#{parent_key}[#{url_encode(key)}]" : url_encode(key)
-        if value.is_a?(Hash)
-          result += flatten_params(value, calculated_key)
-        elsif value.is_a?(Array)
-          result += flatten_params_array(value, calculated_key)
+        if params.is_a?(Array)
+          value = key
+          key = ''
+        end
+        key_suffix = escape(key)
+        full_key = key_prefix ? "#{key_prefix}[#{key_suffix}]" : key_suffix
+
+        if value.is_a?(Hash) || value.is_a?(Array)
+          # Handles the following cases:
+          #   { a: { b: "bvalue" } }  => ["a[b]=bvalue"]
+          #   { a: [1, 2] }           => ["a[]=1", "a[]=2"]
+          ret += query_array(value, full_key)
         else
-          result << [calculated_key, value]
+          # Handles the base case with just key and value:
+          #   { a: "value" } => ["a=value"]
+          ret << "#{full_key}=#{escape(value)}"
         end
       end
-      result
+      ret
     end
 
-    def self.flatten_params_array(value, calculated_key)
-      result = []
-      value.each do |elem|
-        if elem.is_a?(Hash)
-          result += flatten_params(elem, calculated_key)
-        elsif elem.is_a?(Array)
-          result += flatten_params_array(elem, calculated_key)
-        else
-          result << ["#{calculated_key}[]", elem]
-        end
-      end
-      result
+    def self.escape(val)
+      URI.escape(val.to_s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
     end
 
-    # The secondary opts argument can either be a string or hash
-    # Turn this value into an api_key and a set of headers
-    def self.parse_opts(opts)
-      case opts
-      when NilClass
-        return nil, {}
-      when String
-        return opts, {}
-      when Hash
-        headers = {}
-        if opts[:idempotency_key]
-          headers[:idempotency_key] = opts[:idempotency_key]
+    def self.symbolize_keys(obj)
+      if obj.is_a?(Hash)
+        ret = {}
+        obj.each do |key, value|
+          ret[(key.to_sym rescue key) || key] = symbolize_keys(value)
         end
-        if opts[:paid_account]
-          headers[:paid_account] = opts[:paid_account]
-        end
-        return opts[:api_key], headers
+        return ret
+      elsif obj.is_a?(Array)
+        return obj.map{ |value| symbolize_keys(value) }
       else
-        raise TypeError.new("parse_opts expects a string or a hash")
+        return obj
       end
     end
+
+    def self.sorta_deep_clone(json)
+      if json.is_a?(Hash)
+        ret = {}
+        json.each do |k, v|
+          ret[k] = sorta_deep_clone(v)
+        end
+        ret
+      elsif json.is_a?(Array)
+        json.map{ |j| sorta_deep_clone(j) }
+      else
+        begin
+          json.dup
+        rescue
+          json
+        end
+      end
+    end
+
   end
 end

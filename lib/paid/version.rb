@@ -1,3 +1,3 @@
 module Paid
-  VERSION = "0.1.0"
+  VERSION = File.open(File.expand_path("../../../VERSION", __FILE__)).read()
 end
