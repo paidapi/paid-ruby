@@ -146,9 +146,17 @@ module Paid
 
     private
 
+    def instance_variables_include?(name)
+      if RUBY_VERSION <= '1.9'
+        instance_variables.include?("@#{name}")
+      else
+        instance_variables.include?("@#{name}".to_sym)
+      end
+    end
+
     def self.attribute_get_lambda(name)
       lambda do
-        unless instance_variables.include?("@#{name}")
+        unless instance_variables_include?(name)
           nil
         else
           instance_variable_get("@#{name}")
