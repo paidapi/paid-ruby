@@ -148,7 +148,7 @@ module Paid
 
     def self.attribute_get_lambda(name)
       lambda do
-        unless instance_variables.include?("@#{name}".to_sym)
+        unless instance_variables.include?("@#{name}")
           nil
         else
           instance_variable_get("@#{name}")

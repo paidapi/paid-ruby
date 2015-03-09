@@ -37,7 +37,11 @@ module Paid
         response = test_response(test_mock_resource_list)
 
         # The test is to basically make sure this expectation passes.
-        @mock.expects(:get).with("#{Paid.api_base}#{MockResource.path}?page=1&filter=test%20filter", anything, nil).returns(response)
+        @mock.expects(:get).with do |url, headers, params|
+          (url == "#{Paid.api_base}#{MockResource.path}?page=1&filter=test%20filter" ||
+          url == "#{Paid.api_base}#{MockResource.path}?filter=test%20filter&page=1") &&
+          params == nil
+        end.returns(response)
 
         list = MockResource.all({
           :page => 1,
