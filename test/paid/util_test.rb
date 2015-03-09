@@ -26,22 +26,22 @@ module Paid
       assert_equal(finish, symbolized)
     end
 
-    should 'query_array should convert { a: "value" } to []' do
-      start = { a: "value" }
+    should 'query_array should convert { :a => "value" } to []' do
+      start = { :a => "value" }
       finish = ["a=value"]
 
       assert_equal(finish, Paid::Util.query_array(start))
     end
 
-    should 'query_array should convert { a: { b: { c: "cvalue" } } } to ["a[b][c]=cvalue"]' do
-      start = { a: { b: { c: "cvalue" } } }
+    should 'query_array should convert { :a => { :b => { :c => "cvalue" } } } to ["a[b][c]=cvalue"]' do
+      start = { :a => { :b => { :c => "cvalue" } } }
       finish = ["a[b][c]=cvalue"]
 
       assert_equal(finish, Paid::Util.query_array(start))
     end
 
-    should 'query_array should convert { a: [1, 2] } to ["a[]=1", "a[]=2"]' do
-      start = { a: [1, 2] }
+    should 'query_array should convert { :a => [1, 2] } to ["a[]=1", "a[]=2"]' do
+      start = { :a => [1, 2] }
       finish = ["a[]=1", "a[]=2"]
 
       assert_equal(finish, Paid::Util.query_array(start))

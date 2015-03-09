@@ -10,9 +10,9 @@ module Paid
     end
 
     # Three major use cases (and nesting of them needs to be supported):
-    #   { a: { b: "bvalue" } }  => ["a[b]=bvalue"]
-    #   { a: [1, 2] }           => ["a[]=1", "a[]=2"]
-    #   { a: "value" }          => ["a=value"]
+    #   { :a => { :b => "bvalue" } }  => ["a[b]=bvalue"]
+    #   { :a => [1, 2] }           => ["a[]=1", "a[]=2"]
+    #   { :a => "value" }          => ["a=value"]
     def self.query_array(params, key_prefix=nil)
       ret = []
       params.each do |key, value|
@@ -25,12 +25,12 @@ module Paid
 
         if value.is_a?(Hash) || value.is_a?(Array)
           # Handles the following cases:
-          #   { a: { b: "bvalue" } }  => ["a[b]=bvalue"]
-          #   { a: [1, 2] }           => ["a[]=1", "a[]=2"]
+          #   { :a => { :b => "bvalue" } }  => ["a[b]=bvalue"]
+          #   { :a => [1, 2] }           => ["a[]=1", "a[]=2"]
           ret += query_array(value, full_key)
         else
           # Handles the base case with just key and value:
-          #   { a: "value" } => ["a=value"]
+          #   { :a => "value" } => ["a=value"]
           ret << "#{full_key}=#{escape(value)}"
         end
       end

@@ -95,7 +95,7 @@ module Paid
 
     def refresh_from(json={})
       unless json.is_a?(Hash)
-        json = { id: json }
+        json = { :id => json }
       end
       self.json = Util.sorta_deep_clone(json)
 
