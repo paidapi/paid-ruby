@@ -1,5 +1,5 @@
 require 'rake/testtask'
-require 'tasks/api_test'
+require './tasks/api_test.rb'
 
 task :default => [:test]
 
@@ -9,5 +9,6 @@ end
 
 task :test_api, [:api_key] do |t, args|
   api_key = args[:api_key]
-
+  api_test = APITest.new(api_key)
+  api_test.run
 end
