@@ -35,7 +35,7 @@ module Paid
       attributes
     end
 
-    def set_attributes
+    def non_nil_attributes
       attributes.select{|k, v| !v.nil? }
     end
 
@@ -136,11 +136,11 @@ module Paid
 
     def inspect
       id_string = (self.respond_to?(:id) && !self.id.nil?) ? " id=#{self.id}" : ""
-      "#<#{self.class}:0x#{self.object_id.to_s(16)}#{id_string}> JSON: " + JSON.pretty_generate(set_attributes)
+      "#<#{self.class}:0x#{self.object_id.to_s(16)}#{id_string}> JSON: " + JSON.pretty_generate(attributes)
     end
 
     def to_json(*a)
-      JSON.generate(set_attributes)
+      JSON.generate(attributes)
     end
 
 

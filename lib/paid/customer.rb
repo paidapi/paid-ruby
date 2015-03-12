@@ -23,7 +23,7 @@ module Paid
     api_class_method :all, :get, :constructor => APIList.constructor(Customer)
     api_class_method :retrieve, :get, ":path/:id", :arguments => [:id]
     api_class_method :create, :post
-    api_class_method :by_external_id, :get, ":path/by_external_id/:external_id", :arguments => [:external_id]
+    api_class_method :by_external_id, :get, ":path/by_external_id", :arguments => [:external_id]
 
     api_instance_method :save, :put, :default_params => :changed_attributes
     api_instance_method :generate_invoice, :post, ":path/generate_invoice", :constructor => Invoice
