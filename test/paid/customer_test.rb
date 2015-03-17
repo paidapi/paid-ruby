@@ -16,7 +16,7 @@ module Paid
 
       should 'be retrieveable by external_id' do
         external_id = "external_id_for_cust"
-        @mock.expects(:get).once.with("#{@customer_url}/by_external_id/#{external_id}", anything, anything).returns(test_response(test_customer))
+        @mock.expects(:get).once.with("#{@customer_url}/by_external_id?external_id=#{external_id}", anything, anything).returns(test_response(test_customer))
         customer = Paid::Customer.by_external_id(external_id)
         assert(customer.is_a?(Paid::Customer))
       end
