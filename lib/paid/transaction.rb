@@ -13,6 +13,7 @@ module Paid
 
     def refresh_from(json={}, api_method=nil)
       super(json, api_method)
+      json = { :id => json } unless json.is_a?(Hash)
       @refunds = RefundList.new(json[:refunds], nil, id)
     end
 
