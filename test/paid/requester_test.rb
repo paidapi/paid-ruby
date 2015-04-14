@@ -35,7 +35,7 @@ module Paid
         end
 
         should 'not convert params to a query string if a file is in them' do
-          expected = { file: File.new(__FILE__) }
+          expected = { :file => File.new(__FILE__) }
           url, params = Requester.prepare_params(@url, expected, @method)
           assert_equal(expected, params)
         end

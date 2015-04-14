@@ -65,7 +65,7 @@ module Paid
 
     def invoices(params={}, headers={})
       params = ParamsBuilder.merge(params, {
-        customer: self.id,
+        :customer => self.id,
       })
       method = APIMethod.new(:get, "/invoices", params, headers, self)
       APIList.new(:Invoice, method.execute, method)
@@ -73,7 +73,7 @@ module Paid
 
     def transactions(params={}, headers={})
       params = ParamsBuilder.merge(params, {
-        customer: self.id,
+        :customer => self.id,
       })
       method = APIMethod.new(:get, "/transactions", params, headers, self)
       APIList.new(:Transaction, method.execute, method)
