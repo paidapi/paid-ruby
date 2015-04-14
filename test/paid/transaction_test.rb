@@ -3,7 +3,7 @@ require File.expand_path('../../test_helper', __FILE__)
 module Paid
   class TransactionTest < Test::Unit::TestCase
     setup do
-      @transaction_url = "#{Paid.api_base}/v0/transactions"
+      @transaction_url = "#{Paid.api_base}/transactions"
     end
 
     context 'Transaction class' do
@@ -49,7 +49,7 @@ module Paid
         transaction.description = "new description"
 
         @mock.expects(:put).once.with do |url, headers, params|
-          params == transaction.changed_attributes && url == "#{@transaction_url}/#{transaction.id}"
+          params == transaction.changed_api_attributes && url == "#{@transaction_url}/#{transaction.id}"
         end.returns(test_response(test_transaction))
 
         # This should update this instance with test_transaction since it was returned
@@ -115,8 +115,8 @@ module Paid
     end
 
     should 'be registered' do
-      assert(APIClass.subclasses.include?(Paid::Transaction))
-      assert_equal(Paid::Transaction, APIClass.subclass_fetch("transaction"))
+      assert(APIResource.api_subclasses.include?(Paid::Transaction))
+      assert_equal(Paid::Transaction, APIResource.api_subclass_fetch("transaction"))
     end
 
 

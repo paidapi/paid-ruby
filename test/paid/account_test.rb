@@ -3,7 +3,7 @@ require File.expand_path('../../test_helper', __FILE__)
 module Paid
   class AccountTest < Test::Unit::TestCase
     setup do
-      @account_url = "#{Paid.api_base}/v0/account"
+      @account_url = "#{Paid.api_base}/account"
     end
 
     should 'be retrievable' do
@@ -41,8 +41,8 @@ module Paid
     end
 
     should 'be registered' do
-      assert(APIClass.subclasses.include?(Paid::Account))
-      assert_equal(Paid::Account, APIClass.subclass_fetch("account"))
+      assert(APIResource.api_subclasses.include?(Paid::Account))
+      assert_equal(Paid::Account, APIResource.api_subclass_fetch("account"))
     end
 
   end

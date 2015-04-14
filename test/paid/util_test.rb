@@ -1,50 +1,51 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 module Paid
-  class UtilTest < Test::Unit::TestCase
-    should "symbolize_keys should convert keys to symbols" do
-      start = {
-        'foo' => 'bar',
-        'array' => [{ 'foo' => 'bar' }],
-        'nested' => {
-          1 => 2,
-          :symbol => 9,
-          'string' => nil
+  class UtilTest < ::Test::Unit::TestCase
+    context '#symbolize_keys' do
+      should "convert keys to symbols" do
+        start = {
+          'foo' => 'bar',
+          'array' => [{ 'foo' => 'bar' }],
+          'nested' => {
+            1 => 2,
+            :symbol => 9,
+            'string' => nil
+          }
         }
-      }
-      finish = {
-        :foo => 'bar',
-        :array => [{ :foo => 'bar' }],
-        :nested => {
-          1 => 2,
-          :symbol => 9,
-          :string => nil
+        finish = {
+          :foo => 'bar',
+          :array => [{ :foo => 'bar' }],
+          :nested => {
+            1 => 2,
+            :symbol => 9,
+            :string => nil
+          }
         }
-      }
 
-      symbolized = Paid::Util.symbolize_keys(start)
-      assert_equal(finish, symbolized)
+        symbolized = Util.symbolize_keys(start)
+        assert_equal(finish, symbolized)
+      end
     end
 
-    should 'query_array should convert { :a => "value" } to []' do
-      start = { :a => "value" }
-      finish = ["a=value"]
+    context '#sorta_deep_clone' do
+      # Super hand wavy test.. but it works for now so whatever.
+      should 'clone well enough that we dont accidentally alter json' do
+        start = { :a => "abc", :b => [ { :c => "c-1" }, { :c => "c-2" } ] }
+        cloned = Util.sorta_deep_clone(start)
 
-      assert_equal(finish, Paid::Util.query_array(start))
+        cloned[:a] = "123"
+        cloned[:b] << { :c => "c-3" }
+        cloned[:b][0][:c] = "c-one"
+
+        assert_equal({ :a => "abc", :b => [ { :c => "c-1" }, { :c => "c-2" } ] }, start)
+      end
     end
 
-    should 'query_array should convert { :a => { :b => { :c => "cvalue" } } } to ["a[b][c]=cvalue"]' do
-      start = { :a => { :b => { :c => "cvalue" } } }
-      finish = ["a[b][c]=cvalue"]
-
-      assert_equal(finish, Paid::Util.query_array(start))
-    end
-
-    should 'query_array should convert { :a => [1, 2] } to ["a[]=1", "a[]=2"]' do
-      start = { :a => [1, 2] }
-      finish = ["a[]=1", "a[]=2"]
-
-      assert_equal(finish, Paid::Util.query_array(start))
+    context '#constantize' do
+      should 'convert :APIResource to the class object' do
+        assert_equal(APIResource, Util.constantize(:APIResource))
+      end
     end
   end
 end

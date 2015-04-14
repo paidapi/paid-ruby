@@ -1,26 +1,37 @@
 module Paid
   class Event < APIResource
-    class Data
-      def self.construct(json={})
-        return nil if json.nil?
-        klass = APIClass.subclass_fetch(json[:object])
-        klass.construct(json)
-      end
+    attr_reader :id
+    attr_reader :object
+    attr_reader :created_at
+    attr_reader :type
+    attr_reader :data
+
+    def self.all(params={}, headers={})
+      method = APIMethod.new(:get, "/events", params, headers, self)
+      APIList.new(self, method.execute, method)
     end
 
-    # attributes :id and :object inherited from APIResource
-    attribute :created_at
-    attribute :type
-    attribute :data, Data
-
-    api_class_method :all, :get, :constructor => APIList.constructor(Event)
-    api_class_method :retrieve, :get, ":path/:id", :arguments => [:id]
-
-
-    def self.path
-      "/v0/events"
+    def self.retrieve(id, params={}, headers={})
+      params = ParamsBuilder.merge(params, {
+        :id => id
+      })
+      method = APIMethod.new(:get, "/events/:id", params, headers, self)
+      self.new(method.execute, method)
     end
 
-    APIClass.register_subclass(self, "event")
+    def refresh(params={}, headers={})
+      method = APIMethod.new(:get, "/events/:id", params, headers, self)
+      self.refresh_from(method.execute, method)
+    end
+
+    # Everything below here is used behind the scenes.
+    APIResource.register_api_subclass(self, "event")
+    @api_attributes = {
+      :id => { :readonly => true },
+      :object => { :readonly => true },
+      :created_at => { :readonly => true },
+      :type => { :readonly => true },
+      :data => { :constructor => :EventData, :readonly => true },
+    }
   end
 end

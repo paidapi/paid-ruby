@@ -1,4 +1,4 @@
 module Paid
-  class APIConnectionError < PaidError
+  class APIConnectionError < APIError
   end
 end

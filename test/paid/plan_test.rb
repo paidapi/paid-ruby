@@ -3,7 +3,7 @@ require File.expand_path('../../test_helper', __FILE__)
 module Paid
   class PlanTest < Test::Unit::TestCase
     setup do
-      @plan_url = "#{Paid.api_base}/v0/plans"
+      @plan_url = "#{Paid.api_base}/plans"
     end
 
     context 'Plan class' do
@@ -84,8 +84,8 @@ module Paid
     end
 
     should 'be registered' do
-      assert(APIClass.subclasses.include?(Paid::Plan))
-      assert_equal(Paid::Plan, APIClass.subclass_fetch("plan"))
+      assert(APIResource.api_subclasses.include?(Paid::Plan))
+      assert_equal(Paid::Plan, APIResource.api_subclass_fetch("plan"))
     end
 
 

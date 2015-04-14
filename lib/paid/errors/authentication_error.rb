@@ -1,4 +1,4 @@
 module Paid
-  class AuthenticationError < PaidError
+  class AuthenticationError < APIError
   end
 end

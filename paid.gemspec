@@ -8,7 +8,7 @@ spec = Gem::Specification.new do |s|
   s.description = 'Paid is the programmatic way to manage payments.  See https://paidapi.com for details.'
   s.homepage = 'http://docs.paidapi.com'
   s.authors = ['Jon Calhoun', 'Ryan Jackson']
-  s.email = ['joncalhoun@gmail.com', 'ryan@paidapi.com']
+  s.email = ['jon@apibits.com', 'ryan@paidapi.com']
   s.version = Paid::VERSION
   s.license = 'MIT'
 

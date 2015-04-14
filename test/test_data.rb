@@ -14,7 +14,6 @@ module Paid
 
     def test_mock_resource
       {
-        :id => 'test_mock_resource_id',
         :object => 'mock_resource',
         :name => 'test mr name',
         :nested => {
@@ -22,8 +21,14 @@ module Paid
           :object => 'nested_resource',
           :price => 500
         },
+        :nested_alt_id => 'nested_alt_id',
+        :nested_with => {
+          :id => 'nested_with_id',
+          :price => 500
+        },
         :thash => { :some_key => "some value" },
-        :tarray => ["abc", "xyz"]
+        :tarray => ["abc", "xyz"],
+        :id => 'test_mock_resource_id'
       }
     end
 
@@ -33,6 +38,8 @@ module Paid
         :data => [test_mock_resource, test_mock_resource, test_mock_resource],
       }
     end
+
+    # Resources
 
     def test_account
       {

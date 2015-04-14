@@ -2,7 +2,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 module Paid
-  class ApiClassTest < Test::Unit::TestCase
+  class APIResourceTest < ::Test::Unit::TestCase
 
     context 'Non-network actions' do
       setup do
@@ -12,11 +12,11 @@ module Paid
         @mock.expects(:delete).never
       end
 
-      should 'not fetch over the network when creating a new APIClass' do
+      should 'not fetch over the network when creating a new APIResource' do
         MockResource.new('fake_id')
       end
 
-      should 'not fetch over the network when creating a new APIClass from a hash' do
+      should 'not fetch over the network when creating a new APIResource from a hash' do
         MockResource.construct(test_mock_resource)
       end
 
@@ -84,7 +84,7 @@ module Paid
       end
     end
 
-    context 'APIClass :default_params' do
+    context 'APIResource :default_params' do
       context 'api_instance_method' do
         setup do
           @response = test_response(test_mock_resource_list)
@@ -199,7 +199,7 @@ module Paid
     end
 
 
-    context 'APIClass#attribute' do
+    context 'APIResource#attribute' do
       should 'create a getter method' do
         assert(MockResource.method_defined?(:name))
       end
@@ -210,52 +210,66 @@ module Paid
 
       should 'have no changed attributes after init' do
         mr = MockResource.new(test_mock_resource)
-        assert(mr.changed_attributes.empty?)
+        assert(mr.changed_api_attributes.empty?)
       end
 
       should 'keep track of changed attributes' do
         mr = MockResource.new(test_mock_resource)
-        assert(mr.changed_attributes.empty?)
+        assert(mr.changed_api_attributes.empty?)
         mr.name = "new name"
-        assert_equal({:name => "new name"}, mr.changed_attributes)
+        assert_equal({:name => "new name"}, mr.changed_api_attributes)
       end
 
       should 'keep track of changed arrays' do
         mr = MockResource.new(test_mock_resource)
-        assert(mr.changed_attributes.empty?)
+        assert(mr.changed_api_attributes.empty?)
         mr.tarray << "new"
-        assert_equal({:tarray => test_mock_resource[:tarray] + ["new"]}, mr.changed_attributes)
+        assert_equal({:tarray => test_mock_resource[:tarray] + ["new"]}, mr.changed_api_attributes)
       end
 
       should 'keep track of changed hashes' do
         mr = MockResource.new(test_mock_resource)
-        assert(mr.changed_attributes.empty?)
+        assert(mr.changed_api_attributes.empty?)
         mr.thash[:some_key] = "new value"
-        assert_equal({:thash => { :some_key => "new value" }}, mr.changed_attributes)
+        assert_equal({:thash => { :some_key => "new value" }}, mr.changed_api_attributes)
       end
 
       context 'constructors' do
         should 'instantiate on #new' do
           mr = MockResource.new(test_mock_resource)
           assert(mr.nested.is_a?(NestedResource))
+          assert(mr.nested_alt.is_a?(NestedResource))
+          assert(mr.nested_with.is_a?(NestedWithParent))
+          assert_equal(mr.path + "/nested_path", mr.nested_with.path)
         end
 
         should 'instantiate on #construct' do
           mr = MockResource.construct(test_mock_resource)
           assert(mr.nested.is_a?(NestedResource))
+          assert(mr.nested_alt.is_a?(NestedResource))
+          assert(mr.nested_with.is_a?(NestedWithParent))
+          assert_equal(mr.path + "/nested_path", mr.nested_with.path)
         end
 
         should 'instantiate on #refresh_from' do
           mr = MockResource.new('fake_id')
           assert(mr.nested.nil?)
-
           mr.refresh_from(test_mock_resource)
           assert(mr.nested.is_a?(NestedResource))
+          assert(mr.nested_alt.is_a?(NestedResource))
+          assert(mr.nested_with.is_a?(NestedWithParent))
+          assert_equal(mr.path + "/nested_path", mr.nested_with.path)
+        end
+
+        should 'with default values' do
+          mr = MockResource.new('fake_id')
+          assert(mr.nested_with.is_a?(NestedWithParent))
+          assert_equal(mr.path + "/nested_path", mr.nested_with.path)
         end
       end
     end
 
-    context 'APIClass :constructor' do
+    context 'APIResource :constructor' do
       context 'for api_class_method' do
         setup do
           @mock.expects(:get).once.returns(test_response(test_mock_resource))
@@ -313,7 +327,7 @@ module Paid
       end
     end
 
-    context 'APIClass api_*_method arguments' do
+    context 'APIResource api_*_method arguments' do
       should 'throw an ArgumentError if too few arguments are provided' do
         assert_raises(ArgumentError) { MockResource.retrieve }
       end
@@ -364,7 +378,7 @@ module Paid
       end
     end
 
-    context 'APIClass api_instance_method paths' do
+    context 'APIResource api_instance_method paths' do
       should 'use the provided argument if it is present' do
         response = test_response(test_mock_resource)
         @mock.expects(:get).with("#{Paid.api_base}/custom_path", anything, anything).returns(response)
@@ -392,7 +406,7 @@ module Paid
       end
     end
 
-    context 'APIClass api_class_method paths' do
+    context 'APIResource api_class_method paths' do
       should 'use the provided argument if it is present' do
         response = test_response(test_mock_resource)
         @mock.expects(:get).with("#{Paid.api_base}#{MockResource.path}/fake_id", anything, anything).returns(response)

@@ -3,7 +3,7 @@ require File.expand_path('../../test_helper', __FILE__)
 module Paid
   class EventTest < Test::Unit::TestCase
     setup do
-      @event_url = "#{Paid.api_base}/v0/events"
+      @event_url = "#{Paid.api_base}/events"
     end
 
     context 'Event class' do
@@ -58,7 +58,6 @@ module Paid
       end
 
       should 'have & convert the data attribute' do
-        assert(@event.data.is_a?(Paid::APIClass))
         event2 = Paid::Event.new(test_event(test_invoice))
         assert(event2.data.is_a?(Paid::Invoice))
       end
@@ -66,8 +65,8 @@ module Paid
     end
 
     should 'be registered' do
-      assert(APIClass.subclasses.include?(Paid::Event))
-      assert_equal(Paid::Event, APIClass.subclass_fetch("event"))
+      assert(APIResource.api_subclasses.include?(Paid::Event))
+      assert_equal(Paid::Event, APIResource.api_subclass_fetch("event"))
     end
 
   end

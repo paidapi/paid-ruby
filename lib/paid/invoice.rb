@@ -1,26 +1,60 @@
 module Paid
   class Invoice < APIResource
-    # attributes :id and :object inherited from APIResource
-    attribute :summary
-    attribute :chase_schedule
-    attribute :next_chase_on
-    attribute :customer
-    attribute :issued_at
-    attribute :terms
-    attribute :url
+    attr_reader :id
+    attr_reader :object
+    attr_accessor :summary
+    attr_accessor :chase_schedule
+    attr_accessor :next_chase_on
+    attr_accessor :customer
+    attr_accessor :issued_at
+    attr_accessor :terms
+    attr_accessor :url
 
-    api_class_method :all, :get, :constructor => APIList.constructor(Invoice)
-    api_class_method :retrieve, :get, ":path/:id", :arguments => [:id]
-    api_class_method :create, :post
-
-    api_instance_method :issue, :post, ":path/issue"
-    api_instance_method :mark_as_paid, :post, ":path/mark_as_paid" # requires :via in params
-
-
-    def self.path
-      "/v0/invoices"
+    def self.all(params={}, headers={})
+      method = APIMethod.new(:get, "/invoices", params, headers, self)
+      APIList.new(self, method.execute, method)
     end
 
-    APIClass.register_subclass(self, "invoice")
+    def self.retrieve(id, params={}, headers={})
+      params = ParamsBuilder.merge(params, {
+        :id => id
+      })
+      method = APIMethod.new(:get, "/invoices/:id", params, headers, self)
+      self.new(method.execute, method)
+    end
+
+    def self.create(params={}, headers={})
+      method = APIMethod.new(:post, "/invoices", params, headers, self)
+      self.new(method.execute, method)
+    end
+
+    def refresh(params={}, headers={})
+      method = APIMethod.new(:get, "/invoices/:id", params, headers, self)
+      self.refresh_from(method.execute, method)
+    end
+
+    def issue(params={}, headers={})
+      method = APIMethod.new(:post, "/invoices/:id/issue", params, headers, self)
+      self.refresh_from(method.execute, method)
+    end
+
+    def mark_as_paid(params={}, headers={})
+      method = APIMethod.new(:post, "/invoices/:id/mark_as_paid", params, headers, self)
+      self.refresh_from(method.execute, method)
+    end
+
+
+    APIResource.register_api_subclass(self, "invoice")
+    @api_attributes = {
+      :id => { :readonly => true },
+      :object => { :readonly => true },
+      :summary => nil,
+      :chase_schedule => nil,
+      :next_chase_on => nil,
+      :customer => nil,
+      :issued_at => nil,
+      :terms => nil,
+      :url => nil
+    }
   end
 end
