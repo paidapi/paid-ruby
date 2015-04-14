@@ -1,5 +1,18 @@
 module Paid
   class APIResource
+
+    class << self
+      # The default :id method is deprecated and isn't useful to us
+      if method_defined?(:id)
+        undef :id
+      end
+    end
+
+    # The default :id method is deprecated and isn't useful to us
+    if method_defined?(:id)
+      undef :id
+    end
+
     attr_reader :api_method
     attr_reader :json
 
