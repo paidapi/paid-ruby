@@ -2,7 +2,7 @@ module Paid
   class RefundList < APIList
     attr_accessor :parent_id
 
-    def initialize(json={}, api_method=nil, parent_id)
+    def initialize(json={}, api_method=nil, parent_id=nil)
       @klass = Util.constantize(:Transaction)
       @parent_id = parent_id
       refresh_from(json, api_method)
