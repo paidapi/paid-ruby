@@ -46,7 +46,12 @@ module Paid
       begin
         json = Util.symbolize_keys(JSON.parse(@response_body))
       rescue JSON::ParserError
-        raise APIError.new("Unable to parse the server response as JSON.", self)
+        if @response_body.is_a?(String) && @response_body.strip.empty?
+          {}
+        else
+          @error = APIError.new("Unable to parse the server response as JSON.", self)
+          raise @error
+        end
       end
     end
 
