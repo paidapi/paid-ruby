@@ -45,7 +45,7 @@ module Paid
 
     def void(params={}, headers={})
       method = APIMethod.new(:post, "/invoices/:id/void", params, headers, self)
-      method.execute
+      self.refresh_from(method.execute, method)
     end
 
 
