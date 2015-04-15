@@ -15,6 +15,7 @@ module Paid
       super(json, api_method)
       json = { :id => json } unless json.is_a?(Hash)
       @refunds = RefundList.new(json[:refunds], nil, id)
+      self
     end
 
     def self.all(params={}, headers={})
@@ -43,6 +44,11 @@ module Paid
     def save(params={}, headers={})
       params = ParamsBuilder.merge(params, changed_api_attributes)
       method = APIMethod.new(:put, "/transactions/:id", params, headers, self)
+      self.refresh_from(method.execute, method)
+    end
+
+    def delete(params={}, headers={})
+      method = APIMethod.new(:delete, "/transactions/:id", params, headers, self)
       self.refresh_from(method.execute, method)
     end
 

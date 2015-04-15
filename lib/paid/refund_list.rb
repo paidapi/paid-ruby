@@ -8,10 +8,11 @@ module Paid
       refresh_from(json, api_method)
     end
 
-    def all(params={}, headers={})
-      method = APIMethod.new(:get, "/transactions/:parent_id/refunds", params, headers, self)
-      APIList.new(:Transaction, method.execute, method)
-    end
+    # Not live on the server yet.
+    # def all(params={}, headers={})
+    #   method = APIMethod.new(:get, "/transactions/:parent_id/refunds", params, headers, self)
+    #   APIList.new(:Transaction, method.execute, method)
+    # end
 
     def create(params={}, headers={})
       method = APIMethod.new(:post, "/transactions/:parent_id/refunds", params, headers, self)

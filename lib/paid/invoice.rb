@@ -43,6 +43,11 @@ module Paid
       self.refresh_from(method.execute, method)
     end
 
+    def void(params={}, headers={})
+      method = APIMethod.new(:post, "/invoices/:id/void", params, headers, self)
+      method.execute
+    end
+
 
     APIResource.register_api_subclass(self, "invoice")
     @api_attributes = {

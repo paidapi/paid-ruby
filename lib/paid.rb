@@ -45,6 +45,7 @@ module Paid
   @api_key = nil
 
   @api_base = "https://api.paidapi.com/v0"
+  @api_staging = "https://api-staging.paidapi.com/v0"
   @auth_header = nil
   @api_version = "v0"
   @support_email = "support@paidapi.com"
@@ -53,7 +54,7 @@ module Paid
 
   class << self
     attr_accessor :api_key, :api_base, :api_version
-    attr_reader :auth_header, :support_email, :docs_url
+    attr_reader :auth_header, :support_email, :docs_url, :api_staging
   end
 
 end
