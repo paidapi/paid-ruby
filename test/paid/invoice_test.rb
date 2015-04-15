@@ -3,7 +3,7 @@ require File.expand_path('../../test_helper', __FILE__)
 module Paid
   class InvoiceTest < Test::Unit::TestCase
     setup do
-      @invoice_url = "#{Paid.api_base}/v0/invoices"
+      @invoice_url = "#{Paid.api_base}/invoices"
     end
 
     context 'Invoice class' do
@@ -106,8 +106,8 @@ module Paid
     end
 
     should 'be registered' do
-      assert(APIClass.subclasses.include?(Paid::Invoice))
-      assert_equal(Paid::Invoice, APIClass.subclass_fetch("invoice"))
+      assert(APIResource.api_subclasses.include?(Paid::Invoice))
+      assert_equal(Paid::Invoice, APIResource.api_subclass_fetch("invoice"))
     end
 
   end

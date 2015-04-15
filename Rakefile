@@ -4,7 +4,7 @@ require './tasks/api_test.rb'
 task :default => [:test]
 
 Rake::TestTask.new do |t|
-  t.pattern = './test/**/*_test.rb'
+  t.pattern = './test/**/[^_]*_test.rb'
 end
 
 task :test_api, [:api_key] do |t, args|

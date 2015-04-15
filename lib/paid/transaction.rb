@@ -1,26 +1,74 @@
 module Paid
   class Transaction < APIResource
-    # attributes :id and :object inherited from APIResource
-    attribute :amount
-    attribute :description
-    attribute :customer
-    attribute :paid
-    attribute :paid_on
-    attribute :properties
-    attribute :invoice
+    attr_reader :id
+    attr_reader :object
+    attr_accessor :amount
+    attr_accessor :description
+    attr_accessor :customer
+    attr_accessor :paid
+    attr_accessor :paid_on
+    attr_accessor :properties
+    attr_accessor :invoice
+    attr_accessor :refunds
 
-    api_class_method :create, :post
-    api_class_method :retrieve, :get, ":path/:id", :arguments => [:id]
-    api_class_method :all, :get, :constructor => APIList.constructor(Transaction)
-
-    api_instance_method :save, :put, :default_params => changed_lambda
-    api_instance_method :mark_as_paid, :post, ":path/mark_as_paid"
-
-
-    def self.path
-      "/v0/transactions"
+    def refresh_from(json={}, api_method=nil)
+      super(json, api_method)
+      json = { :id => json } unless json.is_a?(Hash)
+      @refunds = RefundList.new(json[:refunds], nil, id)
+      self
     end
 
-    APIClass.register_subclass(self, "transaction")
+    def self.all(params={}, headers={})
+      method = APIMethod.new(:get, "/transactions", params, headers, self)
+      APIList.new(self, method.execute, method)
+    end
+
+    def self.retrieve(id, params={}, headers={})
+      params = ParamsBuilder.merge(params, {
+        :id => id
+      })
+      method = APIMethod.new(:get, "/transactions/:id", params, headers, self)
+      self.new(method.execute, method)
+    end
+
+    def self.create(params={}, headers={})
+      method = APIMethod.new(:post, "/transactions", params, headers, self)
+      self.new(method.execute, method)
+    end
+
+    def refresh(params={}, headers={})
+      method = APIMethod.new(:get, "/transactions/:id", params, headers, self)
+      self.refresh_from(method.execute, method)
+    end
+
+    def save(params={}, headers={})
+      params = ParamsBuilder.merge(params, changed_api_attributes)
+      method = APIMethod.new(:put, "/transactions/:id", params, headers, self)
+      self.refresh_from(method.execute, method)
+    end
+
+    def delete(params={}, headers={})
+      method = APIMethod.new(:delete, "/transactions/:id", params, headers, self)
+      self.refresh_from(method.execute, method)
+    end
+
+    def mark_as_paid(params={}, headers={})
+      method = APIMethod.new(:post, "/transactions/:id/mark_as_paid", params, headers, self)
+      self.refresh_from(method.execute, method)
+    end
+
+    APIResource.register_api_subclass(self, "transaction")
+    @api_attributes = {
+      :id => { :readonly => true },
+      :object => { :readonly => true },
+      :amount => nil,
+      :description => nil,
+      :customer => nil,
+      :paid => nil,
+      :paid_on => nil,
+      :properties => nil,
+      :invoice => nil,
+      :refunds => { :constructor => :RefundList, :provide_parent => true }
+    }
   end
 end

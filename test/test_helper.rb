@@ -4,29 +4,29 @@ require 'mocha/setup'
 require 'stringio'
 require 'shoulda'
 require File.expand_path('../test_data', __FILE__)
-require File.expand_path('../mock_resource', __FILE__)
+# require File.expand_path('../mock_resource', __FILE__)
 
 # monkeypatch request methods
 module Paid
-  @mock_rest_client = nil
-
-  def self.mock_rest_client=(mock_client)
-    @mock_rest_client = mock_client
+  class << self
+    attr_accessor :mock_rest_client
   end
 
-  def self.execute_request(opts)
-    headers = opts[:headers]
-    post_params = opts[:payload]
-    case opts[:method]
-    when :get then @mock_rest_client.get opts[:url], headers, post_params
-    when :put then @mock_rest_client.put opts[:url], headers, post_params
-    when :post then @mock_rest_client.post opts[:url], headers, post_params
-    when :delete then @mock_rest_client.delete opts[:url], headers, post_params
+  module Requester
+    def self.request(method, url, params, headers)
+      case method
+      when :get then Paid::mock_rest_client.get(url, headers, params)
+      when :put then Paid::mock_rest_client.put(url, headers, params)
+      when :post then Paid::mock_rest_client.post(url, headers, params)
+      when :delete then Paid::mock_rest_client.delete(url, headers, params)
+      else
+        raise "Invalid method"
+      end
     end
   end
 end
 
-class Test::Unit::TestCase
+class ::Test::Unit::TestCase
   include Paid::TestData
   include Mocha
 

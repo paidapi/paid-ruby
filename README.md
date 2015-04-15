@@ -1,4 +1,4 @@
-# Paid Ruby bindings ![Travis CI Status](https://travis-ci.org/paidapi/paid-ruby.svg?branch=master)
+# Paid Ruby bindings ![Travis CI Status](https://travis-ci.org/paidapi/paid-ruby.svg?branch=master) [![Code Climate](https://codeclimate.com/github/paidapi/paid-ruby/badges/gpa.svg)](https://codeclimate.com/github/paidapi/paid-ruby)
 
 
 ## Installation

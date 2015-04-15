@@ -3,7 +3,7 @@ require File.expand_path('../../test_helper', __FILE__)
 module Paid
   class CustomerTest < Test::Unit::TestCase
     setup do
-      @customer_url = "#{Paid.api_base}/v0/customers"
+      @customer_url = "#{Paid.api_base}/customers"
     end
 
     context 'Customer class' do
@@ -16,7 +16,10 @@ module Paid
 
       should 'be retrieveable by external_id' do
         external_id = "external_id_for_cust"
-        @mock.expects(:get).once.with("#{@customer_url}/by_external_id?external_id=#{external_id}", anything, anything).returns(test_response(test_customer))
+        @mock.expects(:get).once.with do |url, headers, params|
+          Regexp.new("/customers/by_external_id").match(url) &&
+          params[:external_id] == external_id
+        end.returns(test_response(test_customer))
         customer = Paid::Customer.by_external_id(external_id)
         assert(customer.is_a?(Paid::Customer))
       end
@@ -54,7 +57,7 @@ module Paid
         customer.email = "new_email@domain.com"
 
         @mock.expects(:put).once.with do |url, headers, params|
-          params == customer.changed_attributes && url == "#{@customer_url}/#{customer.id}"
+          !params.nil? && url == "#{@customer_url}/#{customer.id}"
         end.returns(test_response(test_customer))
 
         # This should update this instance with test_customer since it was returned
@@ -65,7 +68,9 @@ module Paid
 
       should 'be able to generate an invoice' do
         customer = Paid::Customer.new(test_customer)
-        @mock.expects(:post).once.with("#{@customer_url}/#{customer.id}/generate_invoice", anything, anything).returns(test_response(test_invoice))
+        @mock.expects(:post).once.with do |url, headers, params|
+          Regexp.new("/customers/#{customer.id}/generate_invoice").match(url)
+        end.returns(test_response(test_invoice))
 
         invoice = customer.generate_invoice
         assert(invoice.is_a?(Paid::Invoice))
@@ -73,7 +78,10 @@ module Paid
 
       should 'be able to list invoices' do
         customer = Paid::Customer.new(test_customer)
-        @mock.expects(:get).once.with("#{Paid.api_base}#{Paid::Invoice.path}?customer=#{customer.id}", anything, anything).returns(test_response(test_invoice_list))
+        @mock.expects(:get).once.with do |url, headers, params|
+          Regexp.new("/invoices").match(url) &&
+          params[:customer] == customer.id
+        end.returns(test_response(test_invoice_list))
 
         invoices = customer.invoices
         assert(invoices.is_a?(Paid::APIList))
@@ -84,7 +92,10 @@ module Paid
 
       should 'be able to list transactions' do
         customer = Paid::Customer.new(test_customer)
-        @mock.expects(:get).once.with("#{Paid.api_base}#{Paid::Transaction.path}?customer=#{customer.id}", anything, anything).returns(test_response(test_transaction_list))
+        @mock.expects(:get).once.with do |url, headers, params|
+          Regexp.new("/transactions").match(url) &&
+          params[:customer] == customer.id
+        end.returns(test_response(test_transaction_list))
 
         transactions = customer.transactions
         assert(transactions.is_a?(Paid::APIList))
@@ -97,8 +108,7 @@ module Paid
 
     context 'Retrieved Paid::Customer instance' do
       setup do
-        @mock.expects(:get).once.returns(test_response(test_customer))
-        @customer = Paid::Customer.retrieve('customer_id')
+        @customer = Paid::Customer.new(test_customer)
       end
 
       should 'have the id attribute' do
@@ -184,8 +194,8 @@ module Paid
     end
 
     should 'be registered' do
-      assert(APIClass.subclasses.include?(Paid::Customer))
-      assert_equal(Paid::Customer, APIClass.subclass_fetch("customer"))
+      assert(APIResource.api_subclasses.include?(Paid::Customer))
+      assert_equal(Paid::Customer, APIResource.api_subclass_fetch("customer"))
     end
 
   end
