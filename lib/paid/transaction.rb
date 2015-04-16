@@ -9,14 +9,7 @@ module Paid
     attr_accessor :paid_on
     attr_accessor :properties
     attr_accessor :invoice
-    attr_accessor :refunds
 
-    def refresh_from(json={}, api_method=nil)
-      super(json, api_method)
-      json = { :id => json } unless json.is_a?(Hash)
-      @refunds = RefundList.new(json[:refunds], nil, id)
-      self
-    end
 
     def self.all(params={}, headers={})
       method = APIMethod.new(:get, "/transactions", params, headers, self)
@@ -57,6 +50,10 @@ module Paid
       self.refresh_from(method.execute, method)
     end
 
+    def refunds
+      RefundList.new(nil, nil, id)
+    end
+
     APIResource.register_api_subclass(self, "transaction")
     @api_attributes = {
       :id => { :readonly => true },
@@ -67,8 +64,7 @@ module Paid
       :paid => nil,
       :paid_on => nil,
       :properties => nil,
-      :invoice => nil,
-      :refunds => { :constructor => :RefundList, :provide_parent => true }
+      :invoice => nil
     }
   end
 end

@@ -1,4 +1,10 @@
-=== 1.0.2 2015-04-15
+=== 1.0.4 2015-04-16
+
+* 1 minor enhancements:
+  * Changing the way the refund list is created
+
+
+=== 1.0.3 2015-04-15
 
 * 2 minor enhancements:
   * Adding support for the invoice void endpoint.
