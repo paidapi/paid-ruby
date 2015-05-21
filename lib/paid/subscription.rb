@@ -4,6 +4,7 @@ module Paid
     attr_reader :object
     attr_reader :created_at
     attr_accessor :starts_on
+    attr_accessor :ends_on
     attr_accessor :next_transaction_on
     attr_accessor :plan
     attr_accessor :customer
