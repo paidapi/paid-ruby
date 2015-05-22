@@ -36,7 +36,7 @@ module Paid
     def self.constantize(str, prefix=false)
       str = str.to_s
       begin
-        str.split('::').reduce(Module, :const_get)
+        str.split('::').reduce(Paid, :const_get)
       rescue NameError => e
         if prefix
           raise e
