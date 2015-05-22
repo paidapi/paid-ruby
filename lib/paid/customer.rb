@@ -101,6 +101,8 @@ module Paid
       :allow_wire => nil,
       :allow_check => nil,
       :allow_credit_card => nil,
+      :auto_generate => nil,
+      :auto_issue => nil,
       :terms => nil,
       :billing_type => nil,
       :billing_cycle => nil,

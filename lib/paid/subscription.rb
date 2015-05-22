@@ -46,6 +46,7 @@ module Paid
       :object => { :readonly => true },
       :created_at => { :readonly => true },
       :starts_on => nil,
+      :ends_on => nil,
       :next_transaction_on => nil,
       :plan => { :constructor => :Plan },
       :customer => nil,
