@@ -16,6 +16,8 @@ module Paid
     attr_accessor :allow_wire
     attr_accessor :allow_check
     attr_accessor :allow_credit_card
+    attr_accessor :auto_generate
+    attr_accessor :auto_issue
     attr_accessor :terms
     attr_accessor :billing_type
     attr_accessor :billing_cycle
