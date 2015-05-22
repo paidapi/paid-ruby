@@ -34,17 +34,11 @@ module Paid
     end
 
     def self.constantize(str, prefix=false)
-      str = str.to_s
-      begin
-        str.split('::').reduce(Paid, :const_get)
-      rescue NameError => e
-        if prefix
-          raise e
-        else
-          p = "#{self.name}".split("::").first
-          constantize("#{p}::#{str}", true)
-        end
+      p = "#{self.name}".split("::").first
+      if "#{str}".split("::").first != p
+        str = "#{p}::#{str}"
       end
+      str.split('::').reduce(Module, :const_get)
     end
 
   end
