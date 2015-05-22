@@ -1,6 +1,10 @@
 require File.expand_path('../../test_helper', __FILE__)
 
+class TestObj; end
+
 module Paid
+  class TestObj; end
+
   class UtilTest < ::Test::Unit::TestCase
     context '#symbolize_keys' do
       should "convert keys to symbols" do
@@ -45,6 +49,11 @@ module Paid
     context '#constantize' do
       should 'convert :APIResource to the class object' do
         assert_equal(APIResource, Util.constantize(:APIResource))
+      end
+
+      should 'scope the class in the Paid namespace' do
+        assert_not_equal(::TestObj, Util.constantize(:TestObj))
+        assert_equal(Paid::TestObj, Util.constantize(:TestObj))
       end
     end
   end

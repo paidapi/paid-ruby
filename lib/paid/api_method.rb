@@ -28,7 +28,7 @@ module Paid
         response = Requester.request(method, url, params, headers)
         @response_body = response.body
         @response_code = response.code
-      rescue Exception => e
+      rescue StandardError => e
         @response_body = e.http_body if e.respond_to?(:http_body)
         @response_code = e.http_code if e.respond_to?(:http_code)
         @error = compose_error(e)
