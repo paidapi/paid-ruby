@@ -1,3 +1,11 @@
+=== 1.0.7 2015-05-28
+
+* 3 minor enhancements:
+  * Adding endpoint for updating an Invoice
+  * Adding metadata attribute to Invoice
+  * Adding metadata attribute to Transaction
+
+
 === 1.0.4 2015-04-16
 
 * 1 minor enhancements:
