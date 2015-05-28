@@ -34,6 +34,12 @@ module Paid
       self.refresh_from(method.execute, method)
     end
 
+    def save(params={}, headers={})
+      params = ParamsBuilder.merge(params, changed_api_attributes)
+      method = APIMethod.new(:put, "/invoices/:id", params, headers, self)
+      self.refresh_from(method.execute, method)
+    end
+
     def issue(params={}, headers={})
       method = APIMethod.new(:post, "/invoices/:id/issue", params, headers, self)
       self.refresh_from(method.execute, method)
