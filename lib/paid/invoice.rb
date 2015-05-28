@@ -8,6 +8,7 @@ module Paid
     attr_accessor :customer
     attr_accessor :issued_at
     attr_accessor :terms
+    attr_accessor :metadata
     attr_accessor :url
 
     def self.all(params={}, headers={})
@@ -59,6 +60,7 @@ module Paid
       :customer => nil,
       :issued_at => nil,
       :terms => nil,
+      :metadata => nil,
       :url => nil
     }
   end
