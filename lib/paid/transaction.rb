@@ -9,6 +9,7 @@ module Paid
     attr_accessor :paid_on
     attr_accessor :properties
     attr_accessor :rank
+    attr_accessor :serviced_on
     attr_accessor :metadata
     attr_accessor :invoice
 
@@ -67,6 +68,7 @@ module Paid
       :paid_on => nil,
       :properties => nil,
       :rank => nil,
+      :serviced_on => nil,
       :metadata => nil,
       :invoice => nil
     }
