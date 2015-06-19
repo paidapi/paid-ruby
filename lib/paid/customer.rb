@@ -12,6 +12,7 @@ module Paid
     attr_accessor :address_city
     attr_accessor :address_state
     attr_accessor :address_zip
+    attr_accessor :address_country
     attr_accessor :allow_ach
     attr_accessor :allow_wire
     attr_accessor :allow_check
@@ -97,6 +98,7 @@ module Paid
       :address_city => nil,
       :address_state => nil,
       :address_zip => nil,
+      :address_country => nil,
       :allow_ach => nil,
       :allow_wire => nil,
       :allow_check => nil,
