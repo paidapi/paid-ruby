@@ -1,3 +1,10 @@
+=== 1.1.0 2015-07-21
+
+* 2 enhancements:
+  * Adding several attributes to the Invoice
+  * Updating API Resources to support undeclared attributes
+
+
 === 1.0.11 2015-06-19
 
 * 1 minor enhancements:
