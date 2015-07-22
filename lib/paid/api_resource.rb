@@ -31,11 +31,12 @@ module Paid
       @api_method = api_method
       @json = Util.sorta_deep_clone(json)
 
-      # Use json (not the @json, the cloned copy)
+      # Use json (not @json, the cloned copy)
       json.each do |k, v|
-        if self.class.api_attribute_names.include?(k.to_sym)
-          instance_variable_set("@#{k}", determine_api_attribute_value(k, v))
+        unless self.class.api_attribute_names.include?(k.to_sym)
+          self.class.add_api_attribute(k.to_sym)
         end
+        instance_variable_set("@#{k}", determine_api_attribute_value(k, v))
       end
       self
     end
