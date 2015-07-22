@@ -2,14 +2,28 @@ module Paid
   class Invoice < APIResource
     attr_reader :id
     attr_reader :object
-    attr_accessor :summary
+    attr_accessor :amount
+    attr_accessor :amount_string
     attr_accessor :chase_schedule
-    attr_accessor :next_chase_on
+    attr_accessor :created_at
     attr_accessor :customer
+    attr_accessor :due_date
     attr_accessor :issued_at
-    attr_accessor :terms
+    attr_accessor :last_reminder_on
     attr_accessor :metadata
+    attr_accessor :next_chase_on
+    attr_accessor :number
+    attr_accessor :next_reminder_on
+    attr_accessor :overdue_amount
+    attr_accessor :paid
+    attr_accessor :payment
+    attr_accessor :status
+    attr_accessor :summary
+    attr_accessor :terms
     attr_accessor :url
+    attr_accessor :unpaid_amount
+    attr_accessor :views
+    attr_accessor :voided
 
     def self.all(params={}, headers={})
       method = APIMethod.new(:get, "/invoices", params, headers, self)
