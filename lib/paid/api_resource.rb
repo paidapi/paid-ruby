@@ -58,6 +58,11 @@ module Paid
       @api_attributes.map(&:first)
     end
 
+    def self.add_api_attribute(name)
+      attr_accessor name.to_sym
+      @api_attributes[name.to_sym] = {}
+    end
+
     def api_attributes
       ret = {}
       self.class.api_attribute_names.each do |attribute|
@@ -107,6 +112,7 @@ module Paid
         raw_value
       end
     end
+
     def determine_api_attribute_value(name, raw_value)
       self.class.determine_api_attribute_value(name, raw_value)
     end
@@ -130,6 +136,44 @@ module Paid
       unless name.nil?
         @api_subclasses_hash ||= {}
         @api_subclasses_hash[name] = subclass
+      end
+    end
+
+    # If the server returns an attribute that the api lib doesn't
+    # know about, it will dynamically add it, but it *must* have been
+    # returned by the server to be recognized as a valid attribute.
+    #
+    # For example, if the server returns { "name": "leeroy" }
+    # then `instance.name` and `instance.name = "new name"` would work
+    # but `instnace.dog` and `instance.dog = 123` still would result
+    # in errors.
+    def method_missing(name, *args, &blk)
+      if name.to_s.end_with?('=')
+        key = name.to_s[0..-2].to_sym
+        # If @json has this key, we should set it as an api attribute
+        if @json && @json.has_key?(key)
+          self.class.add_api_attribute(name)
+          # Now try this again...
+          if self.respond_to?(name)
+            return self.send(name, *args, &blk)
+          end
+        end
+        # If we get here, some condition failed. Likely the attribute wasn't returned by the server.
+        super
+      else
+        # If @json has this key, we should set it as an api attribute
+        if @json && @json.has_key?(name.to_sym)
+          self.class.add_api_attribute(name)
+
+          # Set the default value to whatever was in json
+          ret = @json[name.to_sym]
+          self.send(name.to_s + "=", ret)
+
+          # Return the value
+          ret
+        else
+          super
+        end
       end
     end
 
