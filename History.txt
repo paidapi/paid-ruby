@@ -1,3 +1,9 @@
+=== 1.1.1 2015-11-25
+
+* 1 minor enhancements:
+  * Adding generate_resources endpoint to customers.
+
+
 === 1.1.0 2015-07-21
 
 * 2 enhancements:
