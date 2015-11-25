@@ -66,6 +66,11 @@ module Paid
       Util.constantize(:Invoice).new(method.execute, method)
     end
 
+    def generate_invoices(params={}, headers={})
+      method = APIMethod.new(:post, "/customers/:id/generate_invoices", params, headers, self)
+      APIList.new(:Invoice, method.execute, method)
+    end
+
     def invoices(params={}, headers={})
       params = ParamsBuilder.merge(params, {
         :customer => self.id,
