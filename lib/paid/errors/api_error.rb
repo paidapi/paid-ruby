@@ -25,7 +25,8 @@ module Paid
 
     def to_s
       prefix = code.nil? ? "" : "(Status #{code}) "
-      "#{prefix}#{@message}"
+      suffix = " JSON: #{JSON.pretty_generate(json)}" if json
+      "#{prefix}#{@message}" + (json ? suffix : "")
     end
   end
 end
