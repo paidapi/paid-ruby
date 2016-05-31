@@ -37,9 +37,14 @@ require 'paid/event'
 require 'paid/event_data'
 require 'paid/invoice'
 require 'paid/plan'
+require 'paid/plan_item'
+require 'paid/order'
+require 'paid/order_item'
+require 'paid/product'
 require 'paid/subscription'
 require 'paid/transaction'
 require 'paid/refund_list'
+
 
 module Paid
   @api_key = nil
