@@ -90,7 +90,7 @@ module Paid
     end
 
     def self.escape(val)
-      URI.escape(val.to_s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+      CGI::escape(val.to_s)
     end
 
   end
