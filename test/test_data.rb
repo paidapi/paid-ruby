@@ -146,6 +146,58 @@ module Paid
       }
     end
 
+    def test_plan_item
+      {
+        :created_at => 1463730588,
+        :object => "plan_item",
+        :id => "pl_itm_rvI2LsUFPAXLCIyYso0Q",
+        :updated_at => 1463730588,
+        :pricing => {
+          :currency => "usd",
+          :price => 1,
+          :quantity => 1.0,
+          :type => "quantity"
+        },
+        :plan => "pl_sXiYX4jmEE6VsTcRNkPg",
+        :product => "prod_sdhu3jttxzEfq7b9C1g"
+      }
+    end
+
+    def test_plan_item_list
+      {
+        :data => [test_plan_item, test_plan_item, test_plan_item],
+        :object => 'list'
+      }
+    end
+
+    def test_product
+      {
+        :created_at => 1463730588,
+        :object => "product",
+        :id => "prod_sdhu3jttxzEfq7b9C1g",
+        :updated_at => 1464733819,
+        :description => "This is money we want every day.",
+        :external_id => nil,
+        :metadata => {
+          "something" => "to something"
+        },
+        :name => "Test Daily Plan",
+        :pricing => {
+          :currency => "usd",
+          :price => 1,
+          :type => "quantity"
+        },
+        :transaction_description => "This is money we want every day."
+      }
+    end
+
+    def test_product_list
+      {
+        :data => [test_product, test_product, test_product],
+        :object => 'list'
+      }
+    end
+
     def test_event(data=test_invoice, type="invoice.generated")
       {
         :id => "evt_b8DZtUtZs8sxs0EsCcMg",
@@ -153,6 +205,54 @@ module Paid
         :created_at => 1421719697,
         :type => type,
         :data => data
+      }
+    end
+
+    def test_order
+      {
+        :created_at => 1463850015,
+        :object => "order",
+        :id => "ordr_qMjx3cpmJYabgz17LzXbQ",
+        :updated_at => 1464316156,
+        :amount => 15999,
+        :charge_now => false,
+        :service_ends_on => 1463875199,
+        :service_starts_on => 1463270400,
+        :customer => "cus_H17up4YDnwAPLE5Kpag"
+      }
+    end
+
+    def test_order_list
+      {
+        :data => [test_order, test_order, test_order],
+        :object => 'list'
+      }
+    end
+
+    def test_order_item
+      {
+        :created_at => 1463850015,
+        :object => "order_item",
+        :id => "ordr_itm_mxEZHQ1SDx4xYcaAP9WCQ",
+        :updated_at => 1463850015,
+        :pricing => {
+          :currency => "usd",
+          :price => 15999,
+          :quantity => 1.0,
+          :type => "quantity"
+        },
+        :order => "ordr_qMjx3cklJnabgz07XzXbQ",
+        :product => "prod_Q3UG2qooCHz1ywABkk93Lw",
+        :transaction => nil,
+        :service_ends_on => 1463803200,
+        :service_starts_on => 1463284800
+      }
+    end
+
+    def test_order_item_list
+      {
+        :data => [test_order_item, test_order_item, test_order_item],
+        :object => 'list'
       }
     end
 

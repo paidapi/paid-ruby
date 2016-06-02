@@ -38,13 +38,12 @@ module Paid
         @mock.expects(:get).once.with("#{@order_item_url}/#{test_order_item[:id]}", anything, anything).returns(test_response(test_order_item))
         order_item = Paid::OrderItem.new(test_order_item[:id])
         order_item.refresh
-        assert_equal(test_order_item[:name], order_item.name)
+        assert_equal(test_order_item[:order], order_item.order)
       end
 
       should 'be updateable' do
         order_item = Paid::OrderItem.new(test_order_item)
-        order_item.name = "new name"
-        order_item.description = "new description"
+        order_item.product = "prod_123abc"
 
         @mock.expects(:put).once.with do |url, headers, params|
           !params.nil? && url == "#{@order_item_url}/#{order_item.id}"
@@ -52,8 +51,7 @@ module Paid
 
         # This should update this instance with test_order_item since it was returned
         order_item.save
-        assert_equal(test_order_item[:name], order_item.name)
-        assert_equal(test_order_item[:description], order_item.description)
+        assert_equal(test_order_item[:product], order_item.product)
       end
     end
 

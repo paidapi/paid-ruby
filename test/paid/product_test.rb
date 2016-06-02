@@ -15,7 +15,7 @@ module Paid
       end
 
       should 'be createable' do
-        @mock.expects(:post).once.with(@product_url, anything, test_product).returns(test_response(test_product))
+        @mock.expects(:post).once.with(@product_url, anything, anything).returns(test_response(test_product))
         product = Paid::Product.create(test_product)
         assert(product.is_a?(Paid::Product))
         assert_equal(test_product[:id], product.id)
