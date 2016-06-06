@@ -19,14 +19,17 @@ gem build paid.gemspec
 
 ## Requirements
 
-* Ruby 1.8.7 or above. (Ruby 1.8.6 may work if you load
-  ActiveSupport.) For Ruby versions before 1.9.2, you'll need to add this to your Gemfile:
+* Ruby 1.9.3 or above. 
+
+Ruby 1.8.6 may work if you load ActiveSupport. 1.8.7 may work if you add this to your Gemfile:
 
 ```ruby
 if Gem::Version.new(RUBY_VERSION) < Gem::Version.new('1.9.2')
   gem 'rest-client', '~> 1.6.8'
 end
 ```
+
+1.9.2 should work without any changes, but we don't currently test against it or any versions before 1.9.3.
 
 * rest-client, json
 

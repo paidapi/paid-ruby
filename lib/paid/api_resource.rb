@@ -60,6 +60,12 @@ module Paid
     end
 
     def self.add_api_attribute(name)
+      if method_defined?(name)
+        remove_method(name)
+      end
+      if method_defined?("#{name}=")
+        remove_method("#{name}=")
+      end
       attr_accessor name.to_sym
       @api_attributes[name.to_sym] = {}
     end

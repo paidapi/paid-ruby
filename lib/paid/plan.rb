@@ -3,11 +3,11 @@ module Paid
     attr_reader :id
     attr_reader :object
     attr_reader :created_at
+    attr_reader :amount
     attr_accessor :name
     attr_accessor :description
     attr_accessor :interval
     attr_accessor :interval_count
-    attr_accessor :amount
 
     def self.all(params={}, headers={})
       method = APIMethod.new(:get, "/plans", params, headers, self)
@@ -37,11 +37,11 @@ module Paid
       :id => { :readonly => true },
       :object => { :readonly => true },
       :created_at => { :readonly => true },
+      :amount => { :readonly => true },
       :name => nil,
       :description => nil,
       :interval => nil,
-      :interval_count => nil,
-      :amount => nil,
+      :interval_count => nil
     }
   end
 end
