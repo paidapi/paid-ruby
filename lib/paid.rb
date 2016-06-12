@@ -49,12 +49,12 @@ require 'paid/refund_list'
 module Paid
   @api_key = nil
 
-  @api_base = "https://api.paidapi.com/v0"
-  @api_staging = "https://api-staging.paidapi.com/v0"
+  @api_base = "https://api.paidlabs.com/v0"
+  @api_staging = "https://api-staging.paidlabs.com/v0"
   @auth_header = nil
   @api_version = "v0"
-  @support_email = "support@paidapi.com"
-  @docs_url = "https://paidapi.com/docs"
+  @support_email = "hello@paidlabs.com"
+  @docs_url = "https://paidlabs.com/docs"
 
 
   class << self

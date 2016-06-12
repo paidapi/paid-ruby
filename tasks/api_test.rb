@@ -148,7 +148,7 @@ class APITest
     puts "Creating a customer..."
     customer = Paid::Customer.create({
       :name => "Paid",
-      :email => "hello@paidapi.com",
+      :email => "hello@paidlabs.com",
       :description => "Obviously this is just a description.",
       :phone => "4155069330",
       :address_line1 => "2261 Market Street",

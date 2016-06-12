@@ -5,10 +5,10 @@ require 'paid/version'
 spec = Gem::Specification.new do |s|
   s.name = 'paid'
   s.summary = 'Ruby bindings for Paid API'
-  s.description = 'Paid is the programmatic way to manage payments.  See https://paidapi.com for details.'
-  s.homepage = 'http://docs.paidapi.com'
+  s.description = 'Paid is the programmatic way to manage payments.  See https://paidlabs.com for details.'
+  s.homepage = 'http://docs.paidlabs.com'
   s.authors = ['Jon Calhoun', 'Ryan Jackson']
-  s.email = ['jon@apibits.com', 'ryan@paidapi.com']
+  s.email = ['jon@paidlabs.com', 'ryan@paidlabs.com']
   s.version = Paid::VERSION
   s.license = 'MIT'
 

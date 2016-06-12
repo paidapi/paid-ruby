@@ -56,7 +56,7 @@ module Paid
         :id => "cus_DLjf9aDKE9fkdncz",
         :object => "customer",
         :name => "Paid",
-        :email => "hello@paidapi.com",
+        :email => "hello@paidlabs.com",
         :description => "Obviously this is just a description.",
         :address_line1 => "2261 Market Street",
         :address_line2 => "#567",
