@@ -87,9 +87,9 @@ module Paid
       puts "PDB: #{error.inspect}"
       case @response_code
       when 401
-        return AuthenticationError.new(error.message, self)
+        return AuthenticationError.new(error['error']['message'], self)
       else
-        return APIError.new(error.message, self)
+        return APIError.new(error['error']['message'], self)
       end
     end
   end
