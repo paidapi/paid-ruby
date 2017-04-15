@@ -84,12 +84,19 @@ module Paid
 
     # Handle a few common cases.
     def error_with_response(error)
-      puts "PDB: #{error.inspect}"
+      message = begin
+        response_json[:error][:message]
+      rescue
+        nil
+      end
+
+      message ||= error.message
+
       case @response_code
       when 401
-        return AuthenticationError.new(error['error']['message'], self)
+        return AuthenticationError.new(message, self)
       else
-        return APIError.new(error['error']['message'], self)
+        return APIError.new(message, self)
       end
     end
   end

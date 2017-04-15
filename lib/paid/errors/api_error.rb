@@ -2,8 +2,8 @@ module Paid
   class APIError < PaidError
     attr_reader :api_method
 
-    def initialize(message=nil, api_method=nil)
-      @message = message
+    def initialize(message = nil, api_method = nil)
+      @message = message || response_message
       @api_method = api_method
     end
 
@@ -23,10 +23,20 @@ module Paid
       end
     end
 
+    def response_message
+      begin
+        json[:error][:message]
+      rescue
+        nil
+      end
+    end
+
     def to_s
-      prefix = code.nil? ? "" : "(Status #{code}) "
-      suffix = " JSON: #{JSON.pretty_generate(json)}" if json
-      "#{prefix}#{@message}" + (json ? suffix : "")
+      if code.nil?
+        return @message
+      else
+        return "(Status #{code}) #{@message}"
+      end
     end
   end
 end
