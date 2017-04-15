@@ -84,15 +84,20 @@ module Paid
 
     # Handle a few common cases.
     def error_with_response(error)
+      message = begin
+        response_json[:error][:message]
+      rescue
+        nil
+      end
+
+      message ||= error.message
+
       case @response_code
-      when 400, 404
-        return APIError.new("Invalid request. Please check the URL and parameters.", self)
       when 401
-        return AuthenticationError.new("Authentication failed. Please check your API key and verify that it is correct.", self)
+        return AuthenticationError.new(message, self)
       else
-        return APIError.new("An error occured while making the API call.", self)
+        return APIError.new(message, self)
       end
     end
-
   end
 end
