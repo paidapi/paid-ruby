@@ -12,7 +12,7 @@ spec = Gem::Specification.new do |s|
   s.version = Paid::VERSION
   s.license = 'MIT'
 
-  s.add_dependency('rest-client', '~> 1.4')
+  s.add_dependency('rest-client', '~> 2.0.0')
   s.add_dependency('mime-types', '>= 1.25', '<= 3.1')
   s.add_dependency('json', '~> 1.8.1')
 
