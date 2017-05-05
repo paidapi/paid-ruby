@@ -19,7 +19,7 @@ gem build paid.gemspec
 
 ## Requirements
 
-* Ruby 1.9.3 or above. 
+* Ruby 2.0 or above.
 
 Ruby 1.8.6 may work if you load ActiveSupport. 1.8.7 may work if you add this to your Gemfile:
 
