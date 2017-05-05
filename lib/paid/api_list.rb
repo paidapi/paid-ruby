@@ -3,6 +3,7 @@ module Paid
     include Enumerable
 
     attr_reader :data
+    attr_reader :total_pages
     attr_reader :klass
 
     def initialize(klass, json={}, api_method=nil)
@@ -80,7 +81,8 @@ module Paid
 
 
     @api_attributes = {
-      :data => { :readonly => true }
+      :data => { :readonly => true },
+      :total_pages => { :readonly => true }
     }
   end
 end
